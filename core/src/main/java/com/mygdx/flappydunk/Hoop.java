@@ -132,26 +132,53 @@ public class Hoop {
     }
 
     /**
-     * La balle touche-t-elle la matiere de l'anneau (les bords rouges) ?
-     * On approxime les deux cotes du cerceau par deux rectangles :
-     * tout l'anneau SAUF la bande centrale du trou.
+     * Fait rebondir la balle contre la matiere de l'anneau (les bords rouges).
+     * On approxime les deux cotes du cerceau par deux rectangles : tout
+     * l'anneau SAUF la bande centrale (le trou), pour que la balle puisse
+     * plonger dedans mais cogne contre les cotes.
      */
-    public boolean toucheLeBord(float bx, float by, float rayonBalle){
-        float bordGaucheFin = getCenterX() - HOLE_RX;   // fin du cote gauche
-        float bordDroitDebut = getCenterX() + HOLE_RX;  // debut du cote droit
-        return cercleToucheRectangle(bx, by, rayonBalle, x, y, bordGaucheFin - x, HEIGHT)
-            || cercleToucheRectangle(bx, by, rayonBalle, bordDroitDebut, y, getRightX() - bordDroitDebut, HEIGHT);
+    public void rebondir(Player p, float rayonBalle, float elasticite){
+        float bordGaucheFin  = getCenterX() - HOLE_RX;   // fin du cote gauche
+        float bordDroitDebut = getCenterX() + HOLE_RX;   // debut du cote droit
+        rebondSurRectangle(p, rayonBalle, elasticite, x, y, bordGaucheFin - x, HEIGHT);
+        rebondSurRectangle(p, rayonBalle, elasticite, bordDroitDebut, y, getRightX() - bordDroitDebut, HEIGHT);
     }
 
-    /** Collision cercle / rectangle classique : on cherche le point du
-     *  rectangle le plus proche du centre du cercle. */
-    private static boolean cercleToucheRectangle(float cx, float cy, float r,
-                                                 float rx, float ry, float rw, float rh){
+    /** Collision cercle / rectangle : on pousse la balle dehors et on
+     *  reflechit sa vitesse le long de la normale (rebond). */
+    private static void rebondSurRectangle(Player p, float r, float elasticite,
+                                           float rx, float ry, float rw, float rh){
+        float cx = p.getCenterX();
+        float cy = p.getCenterY();
         float closestX = Math.max(rx, Math.min(cx, rx + rw));
         float closestY = Math.max(ry, Math.min(cy, ry + rh));
         float dx = cx - closestX;
         float dy = cy - closestY;
-        return dx * dx + dy * dy <= r * r;
+        float dist2 = dx * dx + dy * dy;
+        if (dist2 >= r * r) return;   // pas de contact
+
+        float nx, ny, penetration;
+        float dist = (float) Math.sqrt(dist2);
+        if (dist > 0.0001f){
+            nx = dx / dist;
+            ny = dy / dist;
+            penetration = r - dist;
+        } else {
+            // le centre est dans le rectangle : on pousse vers le cote le plus proche
+            nx = (cx < rx + rw / 2f) ? -1f : 1f;
+            ny = 0f;
+            penetration = r;
+        }
+
+        // 1) on sort la balle de l'anneau
+        p.setCenter(cx + nx * penetration, cy + ny * penetration);
+
+        // 2) on reflechit la vitesse le long de la normale (uniquement si elle rentre)
+        float vn = p.getVx() * nx + p.getVy() * ny;
+        if (vn < 0){
+            p.setVx(p.getVx() - (1f + elasticite) * vn * nx);
+            p.setVy(p.getVy() - (1f + elasticite) * vn * ny);
+        }
     }
 
     public boolean isScored(){ return scored; }

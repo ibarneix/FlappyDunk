@@ -34,6 +34,18 @@ public class Player {
         this.vx += vx;
         this.vy += vy;
     }
+
+    // acces a la vitesse (pour le rebond contre les anneaux)
+    public float getVx(){ return vx; }
+    public float getVy(){ return vy; }
+    public void setVx(float vx){ this.vx = vx; }
+    public void setVy(float vy){ this.vy = vy; }
+
+    // deplace la balle par son centre (pour la sortir d'un anneau)
+    public void setCenter(float cx, float cy){
+        this.x = cx - image.getWidth()  / 2f;
+        this.y = cy - image.getHeight() / 2f;
+    }
     public float getX(){
        return x;
     }
