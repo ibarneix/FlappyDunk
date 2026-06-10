@@ -43,18 +43,19 @@ public class Player {
 
 
 
-    public void update(float dt, SpriteBatch batch){
-
-
+    // Logique uniquement : on met a jour la vitesse puis la position.
+    public void update(float dt){
         vx += ax * dt;
         vy += ay * dt;
-        x+=vx*dt;
-        y+=vy*dt;
+        x += vx * dt;
+        y += vy * dt;
+    }
 
+    // Rendu uniquement : on dessine le joueur a sa position courante.
+    // Separe de update() pour pouvoir placer la camera entre les deux
+    // (joueur deplace -> camera recalee -> dessin) et eviter le tremblement.
+    public void draw(SpriteBatch batch){
         batch.draw(image, x, y);
-
-
-
     }
 
 

@@ -53,8 +53,14 @@ public class Main extends ApplicationAdapter {
             player.setVelocity(200.0f, 400.0f);
         }
 
-        // La camera suit le joueur uniquement sur l'axe X.
-        // On ne touche pas a position.y -> elle reste au centre vertical de l'ecran.
+        // 1) On met a jour la physique du joueur AVANT de placer la camera.
+        //    Sinon la camera serait calee sur la position de la frame precedente
+        //    et l'ecart variable (vx * dt) ferait vibrer le joueur a l'ecran.
+        player.update(Gdx.graphics.getDeltaTime());
+
+        // 2) La camera suit le joueur uniquement sur l'axe X, sur sa position A JOUR
+        //    -> le joueur reste parfaitement centre, sans tremblement.
+        //    On ne touche pas a position.y -> elle reste au centre vertical de l'ecran.
         cam.position.x = player.getX();
         cam.update();
 
@@ -76,10 +82,10 @@ public class Main extends ApplicationAdapter {
         bgRegion.setRegion(u, 0f, u2, 1f);
 
         batch.begin();
-        // 1) le fond d'abord (donc dessine derriere tout le reste)
+        // le fond d'abord (donc dessine derriere tout le reste)
         batch.draw(bgRegion, left, bottom, w, h);
-        // 2) le joueur par-dessus
-        player.update(Gdx.graphics.getDeltaTime(), batch);
+        // puis le joueur par-dessus (uniquement le dessin, la physique a deja ete faite)
+        player.draw(batch);
         batch.end();
     }
 
