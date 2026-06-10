@@ -4,12 +4,16 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Player {
+    // vitesse a laquelle la vitesse horizontale revient apres un choc
+    private static final float RECUP_AVANCE = 2.5f;
+
     private float x;
     private float y;
     private float vx;
     private float vy;
     private float ax;
     private float ay;
+    private float vxCible;   // vitesse d'avance "normale" a retrouver
     private Texture image;
 
     public Player(Texture image){
@@ -22,6 +26,8 @@ public class Player {
         //acceleration
         this.ax = 0.0f;
         this.ay = -9.8f * 100;
+        //vitesse d'avance visee
+        this.vxCible = 0;
         //image
         this.image=image;
     }
@@ -64,6 +70,7 @@ public class Player {
         this.y = y;
         this.vx = vx;
         this.vy = 0;
+        this.vxCible = vx;
     }
 
     public float getWidth(){
@@ -84,7 +91,9 @@ public class Player {
 
     //met a jour la physique, sans dessiner
     public void update(float dt){
-        vx += ax * dt;
+        // la vitesse horizontale revient en douceur vers la vitesse d'avance :
+        // apres un choc qui la freine ou l'inverse, la balle repart vers l'avant
+        vx += (vxCible - vx) * RECUP_AVANCE * dt;
         vy += ay * dt;
         x+=vx*dt;
         y+=vy*dt;

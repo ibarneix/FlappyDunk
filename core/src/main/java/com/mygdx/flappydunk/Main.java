@@ -22,7 +22,7 @@ public class Main extends ApplicationAdapter {
     private static final int   NB_ANNEAUX     = 6;      // nombre d'anneaux recycles
     private static final float ESPACEMENT     = 600f;   // distance en x entre deux anneaux
     private static final float PREMIER_ANNEAU = 500f;   // x du premier anneau
-    private static final float REBOND         = 0.6f;   // elasticite du rebond (0=mou, 1=dur)
+    private static final float REBOND         = 0.15f;  // elasticite du rebond (0=mou, 1=dur)
 
     private SpriteBatch batch;
     private Player player;
@@ -162,8 +162,8 @@ public class Main extends ApplicationAdapter {
      *   (elle franchit la hauteur du trou en descendant, alignee avec lui).
      */
     private void updateHoops(float prevCenterY){
-        // rayon de collision un peu plus petit que l'image (marges transparentes)
-        float rayonBalle = player.getWidth() / 2f * 0.7f;
+        // rayon de collision plus petit que l'image (marges transparentes + hitbox indulgente)
+        float rayonBalle = player.getWidth() / 2f * 0.55f;
         float camGauche = cam.position.x - worldW / 2f;
 
         for (Hoop h : hoops){

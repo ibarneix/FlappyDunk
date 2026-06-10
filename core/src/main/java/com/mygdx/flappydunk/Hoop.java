@@ -138,10 +138,19 @@ public class Hoop {
      * plonger dedans mais cogne contre les cotes.
      */
     public void rebondir(Player p, float rayonBalle, float elasticite){
-        float bordGaucheFin  = getCenterX() - HOLE_RX;   // fin du cote gauche
-        float bordDroitDebut = getCenterX() + HOLE_RX;   // debut du cote droit
-        rebondSurRectangle(p, rayonBalle, elasticite, x, y, bordGaucheFin - x, HEIGHT);
-        rebondSurRectangle(p, rayonBalle, elasticite, bordDroitDebut, y, getRightX() - bordDroitDebut, HEIGHT);
+        // trou de collision un peu plus large que le trou visible (plus indulgent)
+        float trou = HOLE_RX * 1.15f;
+        float bordGaucheFin  = getCenterX() - trou;   // fin du cote gauche
+        float bordDroitDebut = getCenterX() + trou;   // debut du cote droit
+
+        // on retrecit la hitbox en hauteur : les bords reels de l'anneau sont
+        // fins, on enleve donc une marge en haut et en bas du rectangle
+        float margeY = HEIGHT * 0.20f;
+        float ry = y + margeY;
+        float rh = HEIGHT - 2f * margeY;
+
+        rebondSurRectangle(p, rayonBalle, elasticite, x, ry, bordGaucheFin - x, rh);
+        rebondSurRectangle(p, rayonBalle, elasticite, bordDroitDebut, ry, getRightX() - bordDroitDebut, rh);
     }
 
     /** Collision cercle / rectangle : on pousse la balle dehors et on
