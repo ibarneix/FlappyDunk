@@ -41,6 +41,29 @@ public class Player {
         return y;
     }
 
+    // Taille du joueur = taille de son image (dessine a sa taille native).
+    public float getWidth(){
+        return image.getWidth();
+    }
+    public float getHeight(){
+        return image.getHeight();
+    }
+    // Centre du joueur (utile pour les collisions et le suivi camera).
+    public float getCenterX(){
+        return x + image.getWidth() / 2f;
+    }
+    public float getCenterY(){
+        return y + image.getHeight() / 2f;
+    }
+
+    // Remet le joueur a son etat de depart (pour rejouer apres un game over).
+    public void reset(){
+        x = 0;
+        y = 200;
+        vx = 200;
+        vy = 200;
+    }
+
 
 
     // Logique uniquement : on met a jour la vitesse puis la position.
