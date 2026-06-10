@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -14,6 +15,10 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private Player player;
     private OrthographicCamera cam;
+
+    // Fond qui defile derriere le joueur.
+    private Texture background;
+    private TextureRegion bgRegion;
 
 
     @Override
@@ -30,7 +35,11 @@ public class Main extends ApplicationAdapter {
         // et un saut correspond a une velocite Y positive.
         cam.setToOrtho(false, w, h);
 
-
+        // Fond : wrap en Repeat pour pouvoir le faire defiler a l'infini
+        // (on fera glisser les coordonnees de texture, voir render()).
+        background = new Texture("background.png");
+        background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        bgRegion = new TextureRegion(background);
     }
 
     @Override
@@ -39,6 +48,7 @@ public class Main extends ApplicationAdapter {
 
         // Saut : impulsion au moment ou on appuie (pas tant qu'on maintient),
         // sinon la velocite serait remise a zero a chaque frame et la gravite n'agirait jamais.
+        // On garde vx = 200 -> le joueur continue d'avancer vers la droite.
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
             player.setVelocity(200.0f, 400.0f);
         }
@@ -51,7 +61,24 @@ public class Main extends ApplicationAdapter {
         // ESSENTIEL : applique la camera au batch, sinon deplacer la camera n'a aucun effet.
         batch.setProjectionMatrix(cam.combined);
 
+        // Rectangle visible par la camera (en coordonnees monde).
+        float w = cam.viewportWidth;
+        float h = cam.viewportHeight;
+        float left = cam.position.x - w / 2f;
+        float bottom = cam.position.y - h / 2f;
+
+        // Defilement du fond : on fait glisser les coordonnees de texture (u)
+        // en fonction de la position de la camera. parallax < 1 => le fond
+        // defile plus lentement que le joueur -> effet de profondeur.
+        float parallax = 0.3f;
+        float u = (cam.position.x * parallax) / background.getWidth();
+        float u2 = u + w / background.getWidth();
+        bgRegion.setRegion(u, 0f, u2, 1f);
+
         batch.begin();
+        // 1) le fond d'abord (donc dessine derriere tout le reste)
+        batch.draw(bgRegion, left, bottom, w, h);
+        // 2) le joueur par-dessus
         player.update(Gdx.graphics.getDeltaTime(), batch);
         batch.end();
     }
@@ -59,7 +86,6 @@ public class Main extends ApplicationAdapter {
     @Override
     public void dispose() {
         batch.dispose();
-        //image.dispose();
+        background.dispose();
     }
 }
-
