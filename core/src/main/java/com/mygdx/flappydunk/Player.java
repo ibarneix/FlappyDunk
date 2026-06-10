@@ -41,6 +41,33 @@ public class Player {
         return y;
     }
 
+    //un coup d'aile : on garde la vitesse horizontale, on pousse vers le haut
+    public void flap(float impulsionY){
+        this.vy = impulsionY;
+    }
+
+    //remet le player au depart
+    public void reset(float x, float y, float vx){
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = 0;
+    }
+
+    public float getWidth(){
+        return image.getWidth();
+    }
+    public float getHeight(){
+        return image.getHeight();
+    }
+    //centre de la balle (pour la camera et les collisions)
+    public float getCenterX(){
+        return x + image.getWidth() / 2f;
+    }
+    public float getCenterY(){
+        return y + image.getHeight() / 2f;
+    }
+
 
 
     //met a jour la physique, sans dessiner
