@@ -1,209 +1,209 @@
 package com.mygdx.flappydunk;
 
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
+/**
+ * Couche de rendu / entrees. Toute la logique est dans {@link GameWorld}.
+ */
 public class Main extends ApplicationAdapter {
-    // Rayon de collision du joueur (un peu plus petit que son image pour etre indulgent).
-    private static final float PLAYER_RADIUS = 32f;
-    // Espacement horizontal entre deux cerceaux et position du premier.
-    private static final float HOOP_SPACING = 450f;
-    private static final float FIRST_HOOP_X = 500f;
-    // Bornes verticales ou peut apparaitre le centre d'un cerceau.
-    private static final float HOOP_MIN_Y = 120f;
-    private static final float HOOP_MAX_Y = 360f;
+    // La camera est legerement en avance sur le joueur pour voir venir les cerceaux.
+    private static final float CAMERA_X_OFFSET = 120f;
+    private static final float BG_PARALLAX = 0.3f;
+    private static final float WATER_TOP = GameWorld.GROUND_Y;
 
     private SpriteBatch batch;
-    private Player player;
-    private OrthographicCamera cam;
+    private OrthographicCamera cam;     // suit le joueur
+    private OrthographicCamera hudCam;  // fixe (interface)
+    private BitmapFont font;
+    private final GlyphLayout layout = new GlyphLayout();
 
-    // Fond qui defile derriere le joueur.
-    private Texture background;
+    private GameWorld world;
+
+    // Assets
+    private Texture flappyTex;
+    private TextureRegion flappyRegion;
+    private Texture bgTex;
     private TextureRegion bgRegion;
-
-    // Cerceaux. La texture est decoupee en deux moitiees (arriere = haut, avant = bas)
-    // pour que le joueur passe visuellement A TRAVERS l'anneau.
-    private Texture hoopTexture;
+    private Texture hoopTex;
     private TextureRegion hoopTop;
     private TextureRegion hoopBottom;
-    private Array<Hoop> hoops;
-    private float nextHoopX;
+    private Texture pixel;              // 1x1 blanc, pour dessiner des rectangles
 
-    // Score / etat de jeu / interface (HUD).
-    private int score;
-    private boolean gameOver;
-    private OrthographicCamera hudCam;
-    private BitmapFont font;
-
+    private Preferences prefs;
+    private int best;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
-        player = new Player(new Texture("flappy.png"));
-        player.reset();
+        world = new GameWorld();
 
         float w = Gdx.graphics.getWidth();
         float h = Gdx.graphics.getHeight();
 
         cam = new OrthographicCamera();
-        // Y vers le haut : la gravité (ay negatif) fait tomber le joueur,
-        // et un saut correspond a une velocite Y positive.
         cam.setToOrtho(false, w, h);
-
-        // Camera fixe pour le HUD (le score reste a l'ecran, ne suit pas le monde).
         hudCam = new OrthographicCamera();
         hudCam.setToOrtho(false, w, h);
+
         font = new BitmapFont();
-        font.setColor(Color.BLACK);
-        font.getData().setScale(1.5f);
+        font.getData().setScale(1.4f);
 
-        // Fond : wrap en Repeat pour pouvoir le faire defiler a l'infini
-        // (on fera glisser les coordonnees de texture, voir render()).
-        background = new Texture("background.png");
-        background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        bgRegion = new TextureRegion(background);
+        flappyTex = new Texture("flappy.png");
+        flappyRegion = new TextureRegion(flappyTex);
 
-        // Cerceaux : on coupe l'image en deux (moitie haute = arriere, moitie basse = avant).
-        hoopTexture = new Texture("hoop.png");
-        int hw = hoopTexture.getWidth();
-        int hh = hoopTexture.getHeight();
-        hoopTop = new TextureRegion(hoopTexture, 0, 0, hw, hh / 2);
-        hoopBottom = new TextureRegion(hoopTexture, 0, hh / 2, hw, hh / 2);
-        hoops = new Array<Hoop>();
-        nextHoopX = FIRST_HOOP_X;
+        bgTex = new Texture("background.png");
+        bgTex.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        bgRegion = new TextureRegion(bgTex);
+
+        // Cerceau decoupe en deux : moitie haute = bord arriere, moitie basse = bord avant.
+        hoopTex = new Texture("hoop.png");
+        int hw = hoopTex.getWidth();
+        int hh = hoopTex.getHeight();
+        hoopTop = new TextureRegion(hoopTex, 0, 0, hw, hh / 2);
+        hoopBottom = new TextureRegion(hoopTex, 0, hh / 2, hw, hh / 2);
+
+        Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pm.setColor(Color.WHITE);
+        pm.fill();
+        pixel = new Texture(pm);
+        pm.dispose();
+
+        prefs = Gdx.app.getPreferences("flappydunk");
+        best = prefs.getInteger("best", 0);
     }
 
     @Override
     public void render() {
-        ScreenUtils.clear(1f, 1f, 1f, 1f);
-
-        float dt = Gdx.graphics.getDeltaTime();
-        float prevCenterX = player.getCenterX();
-
-        if (gameOver) {
-            // En game over : SPACE relance une partie.
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-                restart();
-            }
-        } else {
-            // Saut : impulsion au moment ou on appuie (pas tant qu'on maintient).
-            // On garde vx = 200 -> le joueur continue d'avancer vers la droite.
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-                player.setVelocity(200.0f, 400.0f);
-            }
-            // 1) On met a jour la physique du joueur AVANT de placer la camera
-            //    (sinon l'ecart variable vx*dt ferait vibrer le joueur).
-            player.update(dt);
+        // --- Entrees ---
+        boolean tap = Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.justTouched();
+        if (tap) {
+            world.flap();
         }
 
-        // 2) La camera suit le joueur sur l'axe X uniquement (figee si game over).
-        cam.position.x = player.getCenterX();
+        // --- Logique ---
+        GameWorld.State before = world.getState();
+        world.update(Gdx.graphics.getDeltaTime());
+        if (world.getState() == GameWorld.State.GAME_OVER && before != GameWorld.State.GAME_OVER) {
+            if (world.getScore() > best) {
+                best = world.getScore();
+                prefs.putInteger("best", best);
+                prefs.flush();
+            }
+        }
+
+        // --- Camera suit le joueur (axe X), legerement en avance ---
+        Player player = world.getPlayer();
+        cam.position.x = player.getCenterX() + CAMERA_X_OFFSET;
         cam.update();
 
-        if (!gameOver) {
-            spawnHoopsAhead();
-            handleHoops(prevCenterX);
-            // Tombe sous l'ecran -> perdu.
-            if (player.getCenterY() < 0f) {
-                gameOver = true;
-            }
-        }
-
-        // ===== Rendu du monde (avec la camera qui suit le joueur) =====
-        batch.setProjectionMatrix(cam.combined);
+        ScreenUtils.clear(0.55f, 0.78f, 0.92f, 1f);
 
         float w = cam.viewportWidth;
         float h = cam.viewportHeight;
         float left = cam.position.x - w / 2f;
         float bottom = cam.position.y - h / 2f;
 
-        // Defilement du fond : on fait glisser les coordonnees de texture (u)
-        // selon la position de la camera. parallax < 1 => le fond defile plus
-        // lentement que le joueur -> effet de profondeur.
-        float parallax = 0.3f;
-        float u = (cam.position.x * parallax) / background.getWidth();
-        float u2 = u + w / background.getWidth();
-        bgRegion.setRegion(u, 0f, u2, 1f);
-
+        // ===== Monde =====
+        batch.setProjectionMatrix(cam.combined);
         batch.begin();
-        batch.draw(bgRegion, left, bottom, w, h);      // le fond, derriere tout
-        for (Hoop hoop : hoops) {
-            hoop.drawBack(batch, hoopTop);             // bord arriere des cerceaux
+
+        // Fond defilant (parallaxe via glissement des coordonnees de texture).
+        float u = (cam.position.x * BG_PARALLAX) / bgTex.getWidth();
+        float u2 = u + w / bgTex.getWidth();
+        bgRegion.setRegion(u, 0f, u2, 1f);
+        batch.draw(bgRegion, left, bottom, w, h);
+
+        // Eau au fond.
+        batch.setColor(0.25f, 0.6f, 0.85f, 1f);
+        batch.draw(pixel, left, bottom, w, WATER_TOP - bottom);
+        batch.setColor(0.8f, 0.92f, 1f, 1f);
+        batch.draw(pixel, left, WATER_TOP - 4f, w, 4f);
+        batch.setColor(Color.WHITE);
+
+        // Bord arriere des cerceaux (derriere le joueur).
+        for (Hoop hoop : world.getHoops()) {
+            batch.draw(hoopTop, hoop.getX() - Hoop.OUTER_RX, hoop.getY(),
+                    Hoop.OUTER_RX * 2f, Hoop.OUTER_RY);
         }
-        player.draw(batch);                            // le joueur (passe a travers)
-        for (Hoop hoop : hoops) {
-            hoop.drawFront(batch, hoopBottom);         // bord avant des cerceaux, par-dessus
+
+        // Joueur, incline selon sa vitesse verticale (juice).
+        float angle = MathUtils.clamp(player.getVy() * 0.05f, -45f, 30f);
+        batch.draw(flappyRegion,
+                player.getX(), player.getY(),
+                Player.WIDTH / 2f, Player.HEIGHT / 2f,
+                Player.WIDTH, Player.HEIGHT,
+                1f, 1f, angle);
+
+        // Bord avant des cerceaux (devant le joueur -> effet "a travers").
+        for (Hoop hoop : world.getHoops()) {
+            batch.draw(hoopBottom, hoop.getX() - Hoop.OUTER_RX, hoop.getY() - Hoop.OUTER_RY,
+                    Hoop.OUTER_RX * 2f, Hoop.OUTER_RY);
         }
+
         batch.end();
 
-        // ===== Rendu du HUD (camera fixe) =====
+        // ===== Interface (HUD) =====
         batch.setProjectionMatrix(hudCam.combined);
         batch.begin();
-        font.draw(batch, "Score: " + score, 20f, h - 20f);
-        if (gameOver) {
-            font.draw(batch, "GAME OVER - SPACE pour rejouer", 20f, h / 2f);
-        }
+        drawHud(w, h);
         batch.end();
     }
 
-    /** Cree les cerceaux a venir devant la camera et supprime ceux laisses loin derriere. */
-    private void spawnHoopsAhead() {
-        while (nextHoopX < cam.position.x + 700f) {
-            float y = MathUtils.random(HOOP_MIN_Y, HOOP_MAX_Y);
-            hoops.add(new Hoop(nextHoopX, y));
-            nextHoopX += HOOP_SPACING;
+    private void drawHud(float w, float h) {
+        // Score (et swish eventuel).
+        font.setColor(0.12f, 0.16f, 0.22f, 1f);
+        font.draw(batch, "Score: " + world.getScore(), 20f, h - 18f);
+        font.draw(batch, "Best: " + best, 20f, h - 50f);
+        if (world.isSwish()) {
+            font.setColor(0.95f, 0.55f, 0.1f, 1f);
+            drawCentered("SWISH ! +2", w / 2f, h - 60f);
         }
-        for (int i = hoops.size - 1; i >= 0; i--) {
-            if (hoops.get(i).getX() < cam.position.x - 400f) {
-                hoops.removeIndex(i);
-            }
+
+        switch (world.getState()) {
+            case READY:
+                font.setColor(0.12f, 0.16f, 0.22f, 1f);
+                drawCentered("ESPACE / Clic pour jouer", w / 2f, h / 2f);
+                break;
+            case GAME_OVER:
+                // Voile sombre.
+                batch.setColor(0f, 0f, 0f, 0.45f);
+                batch.draw(pixel, 0f, 0f, w, h);
+                batch.setColor(Color.WHITE);
+                font.setColor(Color.WHITE);
+                drawCentered("GAME OVER", w / 2f, h / 2f + 50f);
+                drawCentered("Score : " + world.getScore() + "    Best : " + best, w / 2f, h / 2f + 10f);
+                drawCentered("ESPACE / Clic pour rejouer", w / 2f, h / 2f - 35f);
+                break;
+            default:
+                break;
         }
     }
 
-    /** Detecte le passage du joueur a travers les cerceaux : +1 si centre, game over sinon. */
-    private void handleHoops(float prevCenterX) {
-        float curCenterX = player.getCenterX();
-        float pcy = player.getCenterY();
-        for (Hoop hoop : hoops) {
-            // Le joueur vient de franchir le plan du cerceau pendant cette frame ?
-            if (!hoop.isScored() && prevCenterX < hoop.getX() && curCenterX >= hoop.getX()) {
-                hoop.setScored(true);
-                // Passe-t-il dans l'ouverture (assez centre verticalement) ?
-                if (Math.abs(pcy - hoop.getY()) <= Hoop.OPENING_RY - PLAYER_RADIUS) {
-                    score++;
-                } else {
-                    gameOver = true;   // a touche le bord du cerceau
-                }
-            }
-        }
-    }
-
-    /** Reinitialise la partie. */
-    private void restart() {
-        player.reset();
-        hoops.clear();
-        nextHoopX = FIRST_HOOP_X;
-        score = 0;
-        gameOver = false;
+    private void drawCentered(String text, float cx, float cy) {
+        layout.setText(font, text);
+        font.draw(batch, layout, cx - layout.width / 2f, cy + layout.height / 2f);
     }
 
     @Override
     public void dispose() {
         batch.dispose();
-        background.dispose();
-        hoopTexture.dispose();
         font.dispose();
+        flappyTex.dispose();
+        bgTex.dispose();
+        hoopTex.dispose();
+        pixel.dispose();
     }
 }

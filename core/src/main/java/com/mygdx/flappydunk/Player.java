@@ -1,85 +1,56 @@
 package com.mygdx.flappydunk;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
+/**
+ * Le joueur (l'oiseau / la balle).
+ * Classe PURE : aucune dependance graphique -> testable sans contexte OpenGL.
+ * Le rendu est fait par Main a partir de la position/taille exposees ici.
+ */
 public class Player {
-    private float x;
-    private float y;
-    private float vx;
-    private float vy;
-    private float ax;
-    private float ay;
-    private Texture image;
+    // Taille de l'image du joueur (flappy.png fait 100x100).
+    public static final float WIDTH = 100f;
+    public static final float HEIGHT = 100f;
+    // Rayon de collision (un peu plus petit que l'image pour etre indulgent).
+    public static final float RADIUS = 32f;
 
-    public Player(Texture image){
-        //position
-        this.x=0;
-        this.y=0;
-        //velocité
-        this.vx=0;
-        this.vy=0;
-        //acceleration
-        this.ax = 0.0f;
-        this.ay = -9.8f * 100;
-        //image
-        this.image=image;
+    // Physique.
+    public static final float GRAVITY = -980f;       // chute
+    public static final float FLAP_VELOCITY = 380f;  // impulsion d'un battement d'ailes
+    public static final float FORWARD_SPEED = 200f;  // vitesse d'avance constante
+
+    private float x, y;
+    private float vx, vy;
+
+    public Player() {
+        reset(0f, 200f);
     }
 
-    public void setVelocity(float vx, float vy){
-        this.vx = vx;
-        this.vy = vy;
-    }
-    public void addVelocity(float vx, float vy){
-        this.vx += vx;
-        this.vy += vy;
-    }
-    public float getX(){
-       return x;
-    }
-    public float getY(){
-        return y;
+    /** Replace le joueur a une position de depart. */
+    public void reset(float startX, float startY) {
+        x = startX;
+        y = startY;
+        vx = FORWARD_SPEED;
+        vy = 0f;
     }
 
-    // Taille du joueur = taille de son image (dessine a sa taille native).
-    public float getWidth(){
-        return image.getWidth();
-    }
-    public float getHeight(){
-        return image.getHeight();
-    }
-    // Centre du joueur (utile pour les collisions et le suivi camera).
-    public float getCenterX(){
-        return x + image.getWidth() / 2f;
-    }
-    public float getCenterY(){
-        return y + image.getHeight() / 2f;
-    }
-
-    // Remet le joueur a son etat de depart (pour rejouer apres un game over).
-    public void reset(){
-        x = 0;
-        y = 200;
-        vx = 200;
-        vy = 200;
-    }
-
-
-
-    // Logique uniquement : on met a jour la vitesse puis la position.
-    public void update(float dt){
-        vx += ax * dt;
-        vy += ay * dt;
+    /** Met a jour la physique : gravite puis deplacement. */
+    public void update(float dt) {
+        vy += GRAVITY * dt;
         x += vx * dt;
         y += vy * dt;
     }
 
-    // Rendu uniquement : on dessine le joueur a sa position courante.
-    // Separe de update() pour pouvoir placer la camera entre les deux
-    // (joueur deplace -> camera recalee -> dessin) et eviter le tremblement.
-    public void draw(SpriteBatch batch){
-        batch.draw(image, x, y);
+    /** Battement d'ailes : impulsion vers le haut. */
+    public void jump() {
+        vy = FLAP_VELOCITY;
     }
 
+    public float getX() { return x; }
+    public float getY() { return y; }
+    public float getVx() { return vx; }
+    public float getVy() { return vy; }
+    public void setY(float y) { this.y = y; }
+    public void setVy(float vy) { this.vy = vy; }
 
+    public float getCenterX() { return x + WIDTH / 2f; }
+    public float getCenterY() { return y + HEIGHT / 2f; }
 }
