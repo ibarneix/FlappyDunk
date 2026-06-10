@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix4;
@@ -29,6 +30,7 @@ public class Main extends ApplicationAdapter {
 
     private Hoop[] hoops;
     private int score;
+    private boolean gameOver;
 
     private float worldW;
     private float worldH;
@@ -38,6 +40,7 @@ public class Main extends ApplicationAdapter {
     private TextureRegion bgRegion;
     private Matrix4 uiMatrix;   // projection fixee a l'ecran (fond + score)
     private BitmapFont font;
+    private GlyphLayout layout;
 
     @Override
     public void create() {
@@ -54,6 +57,7 @@ public class Main extends ApplicationAdapter {
         uiMatrix = new Matrix4().setToOrtho2D(0, 0, worldW, worldH);
         font = new BitmapFont();
         font.getData().setScale(2f);
+        layout = new GlyphLayout();
 
         buildBackground();
 
@@ -64,6 +68,7 @@ public class Main extends ApplicationAdapter {
     /** (Re)place la balle et les anneaux au depart. */
     private void resetGame(){
         score = 0;
+        gameOver = false;
         player.reset(0, worldH / 2f, VITESSE_AVANCE);
         for (int i = 0; i < NB_ANNEAUX; i++){
             float x = PREMIER_ANNEAU + i * ESPACEMENT;
@@ -109,20 +114,30 @@ public class Main extends ApplicationAdapter {
         float dt = Gdx.graphics.getDeltaTime();
         ScreenUtils.clear(0.78f, 0.72f, 0.62f, 1f);
 
-        // ---- entrees : saut au clavier (ESPACE) ou clic/tap ----
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.justTouched()){
-            player.flap(FORCE_SAUT);
+        boolean action = Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.justTouched();
+
+        if (gameOver){
+            // partie arretee : on attend juste un appui pour rejouer
+            if (action){
+                resetGame();
+            }
+        } else {
+            // ---- entrees : saut au clavier (ESPACE) ou clic/tap ----
+            if (action){
+                player.flap(FORCE_SAUT);
+            }
+
+            // ---- 1. physique (on garde la hauteur d'avant pour le dunk) ----
+            float prevCenterY = player.getCenterY();
+            player.update(dt);
+
+            // ---- 2. la camera suit la balle sur l'axe x uniquement ----
+            cam.position.x = player.getCenterX();
+            cam.update();
+
+            // ---- 3. collisions / score / recyclage des anneaux ----
+            updateHoops(prevCenterY);
         }
-
-        // ---- 1. physique ----
-        player.update(dt);
-
-        // ---- 2. la camera suit la balle sur l'axe x uniquement ----
-        cam.position.x = player.getCenterX();
-        cam.update();
-
-        // ---- 3. collisions / score / recyclage des anneaux ----
-        updateHoops();
 
         // ---- 4. fond (fixe a l'ecran, defile en parallaxe) ----
         batch.setProjectionMatrix(uiMatrix);
@@ -145,34 +160,64 @@ public class Main extends ApplicationAdapter {
         for (Hoop h : hoops) h.drawFront(batch);
         batch.end();
 
-        // ---- 6. score (fixe a l'ecran) ----
+        // ---- 6. interface (fixe a l'ecran) ----
         batch.setProjectionMatrix(uiMatrix);
         batch.begin();
         font.draw(batch, "Score : " + score, 20, worldH - 20);
+        if (gameOver){
+            drawCentre("GAME OVER", worldH / 2f + 60);
+            drawCentre("Score : " + score, worldH / 2f);
+            drawCentre("ESPACE ou clic pour rejouer", worldH / 2f - 60);
+        }
         batch.end();
     }
 
-    /** Verifie le passage dans le trou, le recyclage et les collisions. */
-    private void updateHoops(){
-        float rayonBalle = player.getHeight() / 2f;
+    /** Dessine un texte centre horizontalement a la hauteur donnee. */
+    private void drawCentre(String texte, float y){
+        layout.setText(font, texte);
+        font.draw(batch, layout, (worldW - layout.width) / 2f, y);
+    }
+
+    /**
+     * Collisions et score.
+     * Regle du jeu : la balle doit plonger dans l'anneau PAR LE HAUT
+     * (elle franchit la hauteur du trou en descendant, alignee avec lui).
+     * Toucher la matiere de l'anneau, ou le sol, arrete la partie.
+     */
+    private void updateHoops(float prevCenterY){
+        // rayon de collision un peu plus petit que l'image
+        // (l'image a des marges transparentes)
+        float rayonBalle = player.getWidth() / 2f * 0.75f;
+        float bx = player.getCenterX();
+        float by = player.getCenterY();
         float camGauche = cam.position.x - worldW / 2f;
 
+        // tombee au sol -> partie terminee
+        if (by - rayonBalle <= 0){
+            gameOver = true;
+            return;
+        }
+
         for (Hoop h : hoops){
-            // la balle vient de franchir le plan de l'anneau ?
-            if (!h.isScored() && player.getCenterX() >= h.getCenterX()){
-                if (h.ballPasseDansLeTrou(player.getCenterY(), rayonBalle)){
-                    score++;
-                    h.setScored(true);
-                } else {
-                    // touche le bord -> on recommence
-                    resetGame();
-                    return;
-                }
+            // on touche le bord rouge -> partie terminee
+            if (h.toucheLeBord(bx, by, rayonBalle)){
+                gameOver = true;
+                return;
             }
+
+            // le dunk : on descend (prev au-dessus, maintenant au niveau ou en
+            // dessous du centre du trou) en etant aligne avec le trou
+            if (!h.isScored()
+                    && prevCenterY > h.getCenterY()
+                    && by <= h.getCenterY()
+                    && h.balleAuDessusDuTrou(bx, rayonBalle)){
+                score++;
+                h.setScored(true);
+            }
+
             // anneau sorti de l'ecran a gauche -> on le replace plus loin
             if (h.getRightX() < camGauche){
-                float maxX = plusLoinX();
-                h.respawn(maxX + ESPACEMENT, hauteurAleatoire());
+                h.respawn(plusLoinX() + ESPACEMENT, hauteurAleatoire());
             }
         }
     }

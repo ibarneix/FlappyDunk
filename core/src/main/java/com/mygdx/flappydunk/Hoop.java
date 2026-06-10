@@ -8,28 +8,34 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 /**
  * Un anneau rouge (style "donut" vu de face, ellipse horizontale).
  * La texture est generee par code avec un Pixmap : pas besoin d'image.
- * Pour l'effet "on passe a travers", l'anneau est coupe en deux :
- *   - la moitie haute est dessinee DERRIERE la balle
- *   - la moitie basse est dessinee DEVANT la balle
+ *
+ * La balle doit le traverser VERTICALEMENT, de haut en bas (le dunk).
+ * Pour l'effet visuel "on passe a travers", l'anneau est coupe en deux :
+ *   - la moitie haute (l'arriere du cerceau) est dessinee DERRIERE la balle
+ *   - la moitie basse (l'avant du cerceau) est dessinee DEVANT la balle
  */
 public class Hoop {
 
-    // taille de l'anneau (en pixels du monde)
+    // taille de l'anneau a l'ecran (en pixels du monde)
     public static final int WIDTH  = 240;
     public static final int HEIGHT = 110;
 
-    // taille du trou au centre (en proportion de l'anneau)
+    // la texture est generee en 2x plus grand puis affichee reduite :
+    // avec le filtre lineaire, ca lisse les bords (moins pixelise)
+    private static final int SCALE = 2;
+
+    // demi-taille du trou au centre (en pixels du monde)
     private static final float HOLE_RX = WIDTH  / 2f * 0.62f;
     private static final float HOLE_RY = HEIGHT / 2f * 0.62f;
 
     // texture partagee par tous les anneaux (on ne la genere qu'une fois)
     private static Texture ringTexture;
-    private static TextureRegion backHalf;   // moitie haute -> derriere la balle
+    private static TextureRegion backHalf;    // moitie haute -> derriere la balle
     private static TextureRegion frontHalf;   // moitie basse -> devant la balle
 
     private float x;   // coin bas-gauche
     private float y;
-    private boolean scored;   // deja compte / evalue ?
+    private boolean scored;   // dunk deja compte ?
 
     public Hoop(float x, float y){
         if (ringTexture == null) buildTexture();
@@ -40,25 +46,29 @@ public class Hoop {
 
     /** Genere une fois pour toutes la texture de l'anneau rouge. */
     private static void buildTexture(){
-        Pixmap pm = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGBA8888);
+        int tw = WIDTH * SCALE;
+        int th = HEIGHT * SCALE;
+        Pixmap pm = new Pixmap(tw, th, Pixmap.Format.RGBA8888);
         pm.setBlending(Pixmap.Blending.None);
         // tout transparent au depart
         pm.setColor(0f, 0f, 0f, 0f);
         pm.fill();
 
-        float cx = WIDTH  / 2f;
-        float cy = HEIGHT / 2f;
-        float outerRx = WIDTH  / 2f - 2f;
-        float outerRy = HEIGHT / 2f - 2f;
+        float cx = tw / 2f;
+        float cy = th / 2f;
+        float outerRx = tw / 2f - 2f;
+        float outerRy = th / 2f - 2f;
+        float holeRx = HOLE_RX * SCALE;
+        float holeRy = HOLE_RY * SCALE;
 
-        for (int py = 0; py < HEIGHT; py++){
-            for (int px = 0; px < WIDTH; px++){
+        for (int py = 0; py < th; py++){
+            for (int px = 0; px < tw; px++){
                 float ox = (px - cx) / outerRx;
                 float oy = (py - cy) / outerRy;
                 float outer = ox * ox + oy * oy;        // <=1 -> dans l'ellipse exterieure
 
-                float ix = (px - cx) / HOLE_RX;
-                float iy = (py - cy) / HOLE_RY;
+                float ix = (px - cx) / holeRx;
+                float iy = (py - cy) / holeRy;
                 float inner = ix * ix + iy * iy;        // >=1 -> hors du trou
 
                 if (outer <= 1f && inner >= 1f){
@@ -86,18 +96,18 @@ public class Hoop {
 
         // on decoupe la texture en deux moities (haut / bas).
         // Attention : dans un Pixmap, la ligne 0 est EN HAUT de l'image.
-        backHalf  = new TextureRegion(ringTexture, 0, 0,          WIDTH, HEIGHT / 2);
-        frontHalf = new TextureRegion(ringTexture, 0, HEIGHT / 2, WIDTH, HEIGHT / 2);
+        backHalf  = new TextureRegion(ringTexture, 0, 0,      tw, th / 2);
+        frontHalf = new TextureRegion(ringTexture, 0, th / 2, tw, th / 2);
     }
 
     /** Moitie haute de l'anneau : a dessiner AVANT la balle. */
     public void drawBack(SpriteBatch batch){
-        batch.draw(backHalf, x, y + HEIGHT / 2f);
+        batch.draw(backHalf, x, y + HEIGHT / 2f, WIDTH, HEIGHT / 2f);
     }
 
     /** Moitie basse de l'anneau : a dessiner APRES la balle. */
     public void drawFront(SpriteBatch batch){
-        batch.draw(frontHalf, x, y);
+        batch.draw(frontHalf, x, y, WIDTH, HEIGHT / 2f);
     }
 
     /** Le centre du trou (la ou il faut viser). */
@@ -113,10 +123,35 @@ public class Hoop {
         return x + WIDTH;
     }
 
-    /** La balle (a la hauteur py) est-elle dans le trou ? */
-    public boolean ballPasseDansLeTrou(float py, float rayonBalle){
-        float hauteurTrou = HOLE_RY - rayonBalle * 0.5f;   // petite marge
-        return Math.abs(py - getCenterY()) <= hauteurTrou;
+    /**
+     * La balle est-elle alignee avec le trou (horizontalement) ?
+     * C'est la condition pour pouvoir plonger dedans.
+     */
+    public boolean balleAuDessusDuTrou(float ballCenterX, float rayonBalle){
+        return Math.abs(ballCenterX - getCenterX()) <= HOLE_RX - rayonBalle * 0.4f;
+    }
+
+    /**
+     * La balle touche-t-elle la matiere de l'anneau (les bords rouges) ?
+     * On approxime les deux cotes du cerceau par deux rectangles :
+     * tout l'anneau SAUF la bande centrale du trou.
+     */
+    public boolean toucheLeBord(float bx, float by, float rayonBalle){
+        float bordGaucheFin = getCenterX() - HOLE_RX;   // fin du cote gauche
+        float bordDroitDebut = getCenterX() + HOLE_RX;  // debut du cote droit
+        return cercleToucheRectangle(bx, by, rayonBalle, x, y, bordGaucheFin - x, HEIGHT)
+            || cercleToucheRectangle(bx, by, rayonBalle, bordDroitDebut, y, getRightX() - bordDroitDebut, HEIGHT);
+    }
+
+    /** Collision cercle / rectangle classique : on cherche le point du
+     *  rectangle le plus proche du centre du cercle. */
+    private static boolean cercleToucheRectangle(float cx, float cy, float r,
+                                                 float rx, float ry, float rw, float rh){
+        float closestX = Math.max(rx, Math.min(cx, rx + rw));
+        float closestY = Math.max(ry, Math.min(cy, ry + rh));
+        float dx = cx - closestX;
+        float dy = cy - closestY;
+        return dx * dx + dy * dy <= r * r;
     }
 
     public boolean isScored(){ return scored; }
