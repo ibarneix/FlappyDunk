@@ -6,6 +6,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class Player {
     // vitesse a laquelle la vitesse horizontale revient apres un choc
     private static final float RECUP_AVANCE = 2.5f;
+    // roulement : degres de rotation par unite de vitesse horizontale
+    private static final float ROULEMENT = 0.7f;
+    // attenuation du spin supplementaire donne par un choc
+    private static final float SPIN_ATTENUE = 2.5f;
 
     private float x;
     private float y;
@@ -14,6 +18,8 @@ public class Player {
     private float ax;
     private float ay;
     private float vxCible;   // vitesse d'avance "normale" a retrouver
+    private float rotation;  // angle d'affichage de la balle (degres)
+    private float spin;      // rotation supplementaire donnee par un choc (deg/s)
     private Texture image;
 
     public Player(Texture image){
@@ -28,6 +34,9 @@ public class Player {
         this.ay = -9.8f * 100;
         //vitesse d'avance visee
         this.vxCible = 0;
+        //rotation
+        this.rotation = 0;
+        this.spin = 0;
         //image
         this.image=image;
     }
@@ -64,6 +73,11 @@ public class Player {
         this.vy = impulsionY;
     }
 
+    //ajoute de la rotation (au contact d'un cerceau)
+    public void addSpin(float deltaSpin){
+        this.spin += deltaSpin;
+    }
+
     //remet le player au depart
     public void reset(float x, float y, float vx){
         this.x = x;
@@ -71,6 +85,8 @@ public class Player {
         this.vx = vx;
         this.vy = 0;
         this.vxCible = vx;
+        this.rotation = 0;
+        this.spin = 0;
     }
 
     public float getWidth(){
@@ -97,11 +113,24 @@ public class Player {
         vy += ay * dt;
         x+=vx*dt;
         y+=vy*dt;
+
+        // rotation : roulement de base lie a l'avance + spin du dernier choc
+        float roulement = -vx * ROULEMENT;          // roule vers l'avant
+        rotation += (roulement + spin) * dt;
+        spin -= spin * SPIN_ATTENUE * dt;           // le spin s'attenue
     }
 
-    //dessine le player a sa position actuelle
+    //dessine le player a sa position actuelle (avec sa rotation)
     public void draw(SpriteBatch batch){
-        batch.draw(image, x, y);
+        float w = image.getWidth();
+        float h = image.getHeight();
+        batch.draw(image, x, y,           // position du coin bas-gauche
+                w / 2f, h / 2f,            // centre de rotation
+                w, h,                       // taille affichee
+                1f, 1f,                     // echelle
+                rotation,                   // angle
+                0, 0, (int) w, (int) h,     // zone source dans la texture
+                false, false);              // pas de miroir
     }
 
 

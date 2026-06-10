@@ -35,13 +35,15 @@ public class Hoop {
 
     private float x;   // coin bas-gauche
     private float y;
-    private boolean scored;   // dunk deja compte ?
+    private boolean scored;    // dunk deja compte ?
+    private boolean touched;   // la balle a-t-elle touche le bord de cet anneau ?
 
     public Hoop(float x, float y){
         if (ringTexture == null) buildTexture();
         this.x = x;
         this.y = y;
         this.scored = false;
+        this.touched = false;
     }
 
     /** Genere une fois pour toutes la texture de l'anneau rouge. */
@@ -137,7 +139,8 @@ public class Hoop {
      * l'anneau SAUF la bande centrale (le trou), pour que la balle puisse
      * plonger dedans mais cogne contre les cotes.
      */
-    public void rebondir(Player p, float rayonBalle, float elasticite){
+    /** Fait rebondir la balle ; renvoie true si elle a touche un bord. */
+    public boolean rebondir(Player p, float rayonBalle, float elasticite){
         // trou de collision un peu plus large que le trou visible (plus indulgent)
         float trou = HOLE_RX * 1.15f;
         float bordGaucheFin  = getCenterX() - trou;   // fin du cote gauche
@@ -149,14 +152,18 @@ public class Hoop {
         float ry = y + margeY;
         float rh = HEIGHT - 2f * margeY;
 
-        rebondSurRectangle(p, rayonBalle, elasticite, x, ry, bordGaucheFin - x, rh);
-        rebondSurRectangle(p, rayonBalle, elasticite, bordDroitDebut, ry, getRightX() - bordDroitDebut, rh);
+        boolean choc = false;
+        choc |= rebondSurRectangle(p, rayonBalle, elasticite, x, ry, bordGaucheFin - x, rh);
+        choc |= rebondSurRectangle(p, rayonBalle, elasticite, bordDroitDebut, ry, getRightX() - bordDroitDebut, rh);
+        if (choc) touched = true;
+        return choc;
     }
 
     /** Collision cercle / rectangle : on pousse la balle dehors et on
-     *  reflechit sa vitesse le long de la normale (rebond). */
-    private static void rebondSurRectangle(Player p, float r, float elasticite,
-                                           float rx, float ry, float rw, float rh){
+     *  reflechit sa vitesse le long de la normale (rebond).
+     *  Renvoie true s'il y a eu contact. */
+    private static boolean rebondSurRectangle(Player p, float r, float elasticite,
+                                              float rx, float ry, float rw, float rh){
         float cx = p.getCenterX();
         float cy = p.getCenterY();
         float closestX = Math.max(rx, Math.min(cx, rx + rw));
@@ -164,7 +171,7 @@ public class Hoop {
         float dx = cx - closestX;
         float dy = cy - closestY;
         float dist2 = dx * dx + dy * dy;
-        if (dist2 >= r * r) return;   // pas de contact
+        if (dist2 >= r * r) return false;   // pas de contact
 
         float nx, ny, penetration;
         float dist = (float) Math.sqrt(dist2);
@@ -188,16 +195,29 @@ public class Hoop {
             p.setVx(p.getVx() - (1f + elasticite) * vn * nx);
             p.setVy(p.getVy() - (1f + elasticite) * vn * ny);
         }
+
+        // 3) la balle "roule" sur le bord : on lui donne du spin selon la
+        //    composante tangentielle de sa vitesse
+        float tang = p.getVx() * (-ny) + p.getVy() * nx;
+        p.addSpin(tang * 1.5f);
+        return true;
     }
 
     public boolean isScored(){ return scored; }
     public void setScored(boolean v){ this.scored = v; }
+    public boolean isTouched(){ return touched; }
+
+    /** La balle a-t-elle depasse le trou sans plonger dedans (rate) ? */
+    public boolean trouDepasse(float ballCenterX){
+        return ballCenterX > getCenterX() + HOLE_RX;
+    }
 
     /** Replace l'anneau plus loin avec une nouvelle hauteur (recyclage). */
     public void respawn(float newX, float newY){
         this.x = newX;
         this.y = newY;
         this.scored = false;
+        this.touched = false;
     }
 
     public static void disposeTexture(){
