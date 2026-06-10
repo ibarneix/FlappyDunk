@@ -30,7 +30,7 @@ public class Player {
         this.vx = vx;
         this.vy = vy;
     }
-    public void addVelcity(float vx, float vy){
+    public void addVelocity(float vx, float vy){
         this.vx += vx;
         this.vy += vy;
     }
