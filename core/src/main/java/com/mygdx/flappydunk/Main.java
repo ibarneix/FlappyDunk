@@ -26,7 +26,7 @@ public class Main extends ApplicationAdapter {
         float h = Gdx.graphics.getHeight();
 
         cam = new OrthographicCamera();
-        cam.setToOrtho(true, w, h);
+        cam.setToOrtho(false, w, h);
 
 
     }
@@ -39,16 +39,17 @@ public class Main extends ApplicationAdapter {
             player.setVelocity(200.0f, 300.0f);
         }
 
+        //1. la physique d'abord
+        player.update(Gdx.graphics.getDeltaTime());
+
+        //2. la camera suit la nouvelle position (axe x uniquement)
         cam.position.x = player.getX();
-        cam.position.y = player.getY();
         cam.update();
 
+        //3. on applique la camera au batch, puis on dessine
+        batch.setProjectionMatrix(cam.combined);
         batch.begin();
-        player.update(Gdx.graphics.getDeltaTime(), batch);
-
-
-
-
+        player.draw(batch);
         batch.end();
     }
 

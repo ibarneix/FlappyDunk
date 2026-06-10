@@ -43,18 +43,17 @@ public class Player {
 
 
 
-    public void update(float dt, SpriteBatch batch){
-
-
+    //met a jour la physique, sans dessiner
+    public void update(float dt){
         vx += ax * dt;
         vy += ay * dt;
         x+=vx*dt;
         y+=vy*dt;
+    }
 
+    //dessine le player a sa position actuelle
+    public void draw(SpriteBatch batch){
         batch.draw(image, x, y);
-
-
-
     }
 
 
