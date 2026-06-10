@@ -26,7 +26,9 @@ public class Main extends ApplicationAdapter {
         float h = Gdx.graphics.getHeight();
 
         cam = new OrthographicCamera();
-        cam.setToOrtho(true, w, h);
+        // Y vers le haut : la gravité (ay negatif) fait tomber le joueur,
+        // et un saut correspond a une velocite Y positive.
+        cam.setToOrtho(false, w, h);
 
 
     }
@@ -35,20 +37,22 @@ public class Main extends ApplicationAdapter {
     public void render() {
         ScreenUtils.clear(1f, 1f, 1f, 1f);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-            player.setVelocity(200.0f, 300.0f);
+        // Saut : impulsion au moment ou on appuie (pas tant qu'on maintient),
+        // sinon la velocite serait remise a zero a chaque frame et la gravite n'agirait jamais.
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+            player.setVelocity(200.0f, 400.0f);
         }
 
+        // La camera suit le joueur uniquement sur l'axe X.
+        // On ne touche pas a position.y -> elle reste au centre vertical de l'ecran.
         cam.position.x = player.getX();
-        cam.position.y = player.getY();
         cam.update();
+
+        // ESSENTIEL : applique la camera au batch, sinon deplacer la camera n'a aucun effet.
+        batch.setProjectionMatrix(cam.combined);
 
         batch.begin();
         player.update(Gdx.graphics.getDeltaTime(), batch);
-
-
-
-
         batch.end();
     }
 
