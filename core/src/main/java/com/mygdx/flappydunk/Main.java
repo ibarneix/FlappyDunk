@@ -17,13 +17,13 @@ import com.badlogic.gdx.utils.ScreenUtils;
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
     // Rayon de collision du joueur (un peu plus petit que son image pour etre indulgent).
-    private static final float PLAYER_RADIUS = 38f;
+    private static final float PLAYER_RADIUS = 32f;
     // Espacement horizontal entre deux cerceaux et position du premier.
     private static final float HOOP_SPACING = 450f;
     private static final float FIRST_HOOP_X = 500f;
     // Bornes verticales ou peut apparaitre le centre d'un cerceau.
-    private static final float HOOP_MIN_Y = 140f;
-    private static final float HOOP_MAX_Y = 340f;
+    private static final float HOOP_MIN_Y = 120f;
+    private static final float HOOP_MAX_Y = 360f;
 
     private SpriteBatch batch;
     private Player player;
@@ -33,8 +33,11 @@ public class Main extends ApplicationAdapter {
     private Texture background;
     private TextureRegion bgRegion;
 
-    // Cerceaux.
+    // Cerceaux. La texture est decoupee en deux moitiees (arriere = haut, avant = bas)
+    // pour que le joueur passe visuellement A TRAVERS l'anneau.
     private Texture hoopTexture;
+    private TextureRegion hoopTop;
+    private TextureRegion hoopBottom;
     private Array<Hoop> hoops;
     private float nextHoopX;
 
@@ -72,8 +75,12 @@ public class Main extends ApplicationAdapter {
         background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         bgRegion = new TextureRegion(background);
 
-        // Cerceaux.
+        // Cerceaux : on coupe l'image en deux (moitie haute = arriere, moitie basse = avant).
         hoopTexture = new Texture("hoop.png");
+        int hw = hoopTexture.getWidth();
+        int hh = hoopTexture.getHeight();
+        hoopTop = new TextureRegion(hoopTexture, 0, 0, hw, hh / 2);
+        hoopBottom = new TextureRegion(hoopTexture, 0, hh / 2, hw, hh / 2);
         hoops = new Array<Hoop>();
         nextHoopX = FIRST_HOOP_X;
     }
@@ -131,11 +138,14 @@ public class Main extends ApplicationAdapter {
         bgRegion.setRegion(u, 0f, u2, 1f);
 
         batch.begin();
-        batch.draw(bgRegion, left, bottom, w, h);     // le fond, derriere tout
+        batch.draw(bgRegion, left, bottom, w, h);      // le fond, derriere tout
         for (Hoop hoop : hoops) {
-            hoop.draw(batch, hoopTexture);             // les cerceaux
+            hoop.drawBack(batch, hoopTop);             // bord arriere des cerceaux
         }
-        player.draw(batch);                            // le joueur par-dessus
+        player.draw(batch);                            // le joueur (passe a travers)
+        for (Hoop hoop : hoops) {
+            hoop.drawFront(batch, hoopBottom);         // bord avant des cerceaux, par-dessus
+        }
         batch.end();
 
         // ===== Rendu du HUD (camera fixe) =====
@@ -171,7 +181,7 @@ public class Main extends ApplicationAdapter {
             if (!hoop.isScored() && prevCenterX < hoop.getX() && curCenterX >= hoop.getX()) {
                 hoop.setScored(true);
                 // Passe-t-il dans l'ouverture (assez centre verticalement) ?
-                if (Math.abs(pcy - hoop.getY()) <= Hoop.OPENING_RADIUS - PLAYER_RADIUS) {
+                if (Math.abs(pcy - hoop.getY()) <= Hoop.OPENING_RY - PLAYER_RADIUS) {
                     score++;
                 } else {
                     gameOver = true;   // a touche le bord du cerceau

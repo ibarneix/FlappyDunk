@@ -1,16 +1,22 @@
 package com.mygdx.flappydunk;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
- * Un cerceau que le joueur doit traverser.
+ * Un cerceau horizontal (ellipse) que le joueur doit traverser.
  * (x, y) = centre du cerceau / centre de l'ouverture.
+ *
+ * Pour donner l'illusion que le joueur passe A TRAVERS l'anneau, on dessine
+ * le cerceau en deux temps :
+ *   - drawBack()  : la moitie arriere (le bord du fond), AVANT le joueur
+ *   - drawFront() : la moitie avant (le bord de devant), APRES le joueur
  */
 public class Hoop {
-    // Dimensions (doivent correspondre a l'image hoop.png : trou r=85, exterieur r=115).
-    public static final float OPENING_RADIUS = 85f;  // demi-hauteur de l'ouverture (le trou)
-    public static final float OUTER_RADIUS = 115f;   // rayon exterieur (pour le dessin)
+    // Dimensions (doivent correspondre a l'image hoop.png : 280 x 172).
+    public static final float OUTER_RX = 140f;   // demi-largeur de l'ellipse exterieure
+    public static final float OUTER_RY = 86f;    // demi-hauteur de l'ellipse exterieure
+    public static final float OPENING_RY = 64f;  // demi-hauteur du trou (pour la collision)
 
     private final float x;
     private final float y;
@@ -34,9 +40,13 @@ public class Hoop {
         this.scored = scored;
     }
 
-    public void draw(SpriteBatch batch, Texture texture){
-        // On dessine l'anneau centre sur (x, y).
-        float size = OUTER_RADIUS * 2f;
-        batch.draw(texture, x - OUTER_RADIUS, y - OUTER_RADIUS, size, size);
+    // Moitie arriere (haut de l'ellipse) -> dessinee derriere le joueur.
+    public void drawBack(SpriteBatch batch, TextureRegion topHalf){
+        batch.draw(topHalf, x - OUTER_RX, y, OUTER_RX * 2f, OUTER_RY);
+    }
+
+    // Moitie avant (bas de l'ellipse) -> dessinee devant le joueur.
+    public void drawFront(SpriteBatch batch, TextureRegion bottomHalf){
+        batch.draw(bottomHalf, x - OUTER_RX, y - OUTER_RY, OUTER_RX * 2f, OUTER_RY);
     }
 }
