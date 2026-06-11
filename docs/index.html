@@ -3,346 +3,338 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YBJJ Academy – Jiu-Jitsu Brésilien à Anglet, Côte Basque | Yannick Beven</title>
-  <meta name="description" content="YBJJ Academy, l'académie de Jiu-Jitsu Brésilien fondée par Yannick Beven (Ceinture Noire 5ème Dan) à Anglet, sur la Côte Basque. Cours enfants et adultes, préparation physique, esprit surf & BJJ.">
+  <title>YBJJ Academy – Jiu Jitsu Team | Anglet, Côte Basque</title>
+  <meta name="description" content="YBJJ Academy, l'académie de Jiu-Jitsu Brésilien fondée par Yannick Beven (Ceinture Noire 5ème Dan) à Anglet. Éducation martiale, cours enfants et adultes, préparation physique, esprit surf & BJJ.">
   <meta property="og:title" content="YBJJ Academy – L'excellence du Jiu-Jitsu Brésilien sur la Côte Basque">
   <meta property="og:description" content="Une académie fondée par Yannick Beven, mariant la rigueur des arts martiaux et le lifestyle de l'océan.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="assets/logo.svg">
-  <meta name="theme-color" content="#0B1B2B">
-  <link rel="icon" type="image/svg+xml" href="assets/logo-mark.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta property="og:image" content="assets/logo.png">
+  <meta name="theme-color" content="#0A0A0B">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="preload" href="assets/fonts/anton-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/archivo-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+  <!-- ===== Préloader ===== -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader-inner">
+      <img class="preloader-logo" src="assets/logo.png" alt="" width="120" height="120">
+      <div class="preloader-count"><span id="preload-count">0</span>%</div>
+      <div class="preloader-bar"><span id="preload-bar"></span></div>
+      <p class="preloader-text">YBJJ&nbsp;ACADEMY&nbsp;— JIU&nbsp;JITSU&nbsp;TEAM</p>
+    </div>
+  </div>
+
+  <!-- ===== Curseur personnalisé ===== -->
+  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+
+  <!-- ===== Grain ===== -->
+  <div class="noise" aria-hidden="true"></div>
+
   <!-- ===== Navigation ===== -->
-  <header class="site-header" id="haut">
-    <nav class="nav container" aria-label="Navigation principale">
-      <a class="nav-brand" href="#accueil">
-        <img src="assets/logo-mark.svg" alt="" width="46" height="46">
-        <span class="nav-brand-text">YBJJ <em>Academy</em></span>
+  <header class="site-header" id="site-header">
+    <nav class="nav" aria-label="Navigation principale">
+      <a class="nav-brand" href="#accueil" data-cursor>
+        <span class="nav-brand-logo"><img src="assets/logo.png" alt="" width="44" height="44"></span>
+        <span class="nav-brand-text">YBJJ<em>ACADEMY</em></span>
       </a>
-      <button class="nav-toggle" aria-expanded="false" aria-controls="menu-principal" aria-label="Ouvrir le menu">
-        <span></span><span></span><span></span>
+      <button class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="menu-principal" aria-label="Ouvrir le menu">
+        <span></span><span></span>
       </button>
       <ul class="nav-menu" id="menu-principal">
-        <li><a href="#accueil" class="nav-link">Accueil</a></li>
-        <li><a href="#fondateur" class="nav-link">Le Fondateur</a></li>
-        <li><a href="#philosophie" class="nav-link">Philosophie</a></li>
-        <li><a href="#cours" class="nav-link">Nos Cours</a></li>
-        <li><a href="#contact" class="nav-link">Contact</a></li>
-        <li><a href="#contact" class="btn btn-primary btn-nav">Nous rejoindre</a></li>
+        <li><a href="#accueil" class="nav-link" data-cursor>Accueil</a></li>
+        <li><a href="#academie" class="nav-link" data-cursor>L'Académie</a></li>
+        <li><a href="#fondateur" class="nav-link" data-cursor>Le Fondateur</a></li>
+        <li><a href="#philosophie" class="nav-link" data-cursor>Philosophie</a></li>
+        <li><a href="#cours" class="nav-link" data-cursor>Cours</a></li>
+        <li><a href="#contact" class="btn-red nav-cta" data-magnetic data-cursor>Rejoindre&nbsp;le&nbsp;team</a></li>
       </ul>
     </nav>
   </header>
 
-  <main>
+  <main id="contenu">
 
-    <!-- ===== 1. Accueil / Hero ===== -->
+    <!-- ===== HERO ===== -->
     <section class="hero" id="accueil">
-      <div class="hero-bg" aria-hidden="true"></div>
-      <div class="container hero-inner">
-        <img class="hero-logo" src="assets/logo.svg" alt="Logo YBJJ Academy – Jiu-Jitsu Brésilien, Côte Basque" width="220" height="220">
-        <h1 class="hero-title">
-          <span class="hero-title-main">YBJJ&nbsp;Academy</span>
-          <span class="hero-title-sub">L'excellence du Jiu-Jitsu Brésilien sur la Côte&nbsp;Basque</span>
-        </h1>
-        <p class="hero-tagline">Une académie fondée par Yannick&nbsp;Beven, mariant la rigueur des arts martiaux et le lifestyle de l'océan.</p>
-        <div class="hero-actions">
-          <a href="#cours" class="btn btn-primary">Découvrir les cours</a>
-          <a href="#contact" class="btn btn-ghost">Nous contacter</a>
+      <canvas class="hero-canvas" id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="hero-watermark" aria-hidden="true" data-speed="0.3">YBJJ</div>
+
+      <div class="hero-layout">
+        <div class="hero-copy">
+          <p class="hero-overline" data-intro>
+            <span class="dot"></span>YBJJ&nbsp;Academy&nbsp;· Anglet&nbsp;— Côte&nbsp;Basque
+          </p>
+          <h1 class="hero-title">
+            <span class="line" data-split>L'EXCELLENCE</span>
+            <span class="line outline" data-split>DU JIU-JITSU</span>
+            <span class="line" data-split>BRÉSILIEN<span class="red">.</span></span>
+          </h1>
+          <p class="hero-tagline" data-intro>
+            Une académie fondée par <strong>Yannick&nbsp;Beven</strong>, mariant la rigueur
+            des arts martiaux et le lifestyle de l'océan.
+          </p>
+          <div class="hero-actions" data-intro>
+            <a href="#cours" class="btn-red" data-magnetic data-cursor>Découvrir les cours</a>
+            <a href="#fondateur" class="btn-line" data-magnetic data-cursor>Le fondateur</a>
+          </div>
+          <ul class="hero-meta" data-intro aria-label="En bref">
+            <li><span data-count="5">0</span><sup>ème</sup><b>Dan — Ceinture noire</b></li>
+            <li><span data-count="2">0</span><b>Disciplines, un lifestyle</b></li>
+            <li><span data-count="100">0</span>%<b>Passion &amp; entraide</b></li>
+          </ul>
         </div>
-        <ul class="hero-badges" aria-label="En bref">
-          <li>Ceinture Noire 5<sup>ème</sup>&nbsp;Dan</li>
-          <li>Cours enfants &amp; adultes</li>
-          <li>Anglet&nbsp;· Côte Basque</li>
-        </ul>
+
+        <div class="hero-badge" data-intro>
+          <div class="hero-badge-tilt" id="badge-tilt">
+            <img src="assets/logo.png" alt="Logo officiel YBJJ Academy – Jiu Jitsu Team" width="420" height="420">
+          </div>
+        </div>
       </div>
-      <div class="wave-divider" aria-hidden="true">
-        <svg viewBox="0 0 1440 110" preserveAspectRatio="none">
-          <path d="M0,70 C240,110 420,20 720,45 C1020,70 1200,30 1440,60 L1440,110 L0,110 Z" fill="#F2F6F8"/>
-        </svg>
+
+      <a class="hero-scroll" href="#academie" data-cursor aria-label="Faire défiler">
+        <span></span>SCROLL
+      </a>
+
+      <div class="marquee marquee-red" data-marquee data-marquee-speed="22">
+        <div class="marquee-track">
+          <span>YBJJ ACADEMY <i>★</i> JIU JITSU TEAM <i>★</i> ÉDUCATION MARTIALE <i>★</i> CÔTE BASQUE <i>★</i>&nbsp;</span>
+          <span aria-hidden="true">YBJJ ACADEMY <i>★</i> JIU JITSU TEAM <i>★</i> ÉDUCATION MARTIALE <i>★</i> CÔTE BASQUE <i>★</i>&nbsp;</span>
+        </div>
       </div>
     </section>
 
-    <!-- ===== Présentation de l'Académie ===== -->
-    <section class="intro section section-light">
-      <div class="container narrow reveal">
-        <p class="overline">Bienvenue à la YBJJ&nbsp;Academy</p>
-        <h2 class="section-title">Plus qu'un club, un lieu de rassemblement</h2>
-        <p class="lead">
-          Bienvenue à la YBJJ&nbsp;Academy. Plus qu'un simple club d'arts martiaux, notre académie est un lieu
-          de rassemblement pour les passionnés de Jiu-Jitsu Brésilien (JJB), les surfeurs et les sportifs de
-          tous horizons. De l'initiation pour les enfants aux entraînements pour sportifs de haut niveau
-          (surfeurs professionnels, footballeurs internationaux), la YBJJ&nbsp;Academy offre un enseignement
-          technique de très haute qualité dans un esprit de convivialité, d'entraide et de dépassement de soi.
-        </p>
-        <ul class="intro-chips" aria-label="Points forts">
-          <li>Initiation enfants</li>
-          <li>Amateurs &amp; compétiteurs</li>
-          <li>Sportifs de haut niveau</li>
-          <li>Convivialité &amp; entraide</li>
-        </ul>
+    <!-- ===== L'ACADÉMIE ===== -->
+    <section class="section section-white academie" id="academie">
+      <div class="container">
+        <div class="sec-head" data-reveal>
+          <p class="sec-label">01 — L'Académie</p>
+          <h2 class="sec-title">Plus qu'un simple<br>club d'arts martiaux<span class="red">.</span></h2>
+        </div>
+        <div class="academie-grid">
+          <p class="academie-text" data-reveal>
+            Bienvenue à la YBJJ&nbsp;Academy. Plus qu'un simple club d'arts martiaux, notre académie
+            est un <strong>lieu de rassemblement</strong> pour les passionnés de Jiu-Jitsu Brésilien (JJB),
+            les surfeurs et les sportifs de tous horizons. De l'initiation pour les enfants aux
+            entraînements pour <strong>sportifs de haut niveau</strong> (surfeurs professionnels, footballeurs
+            internationaux), la YBJJ&nbsp;Academy offre un enseignement technique de très haute qualité
+            dans un esprit de <strong>convivialité, d'entraide et de dépassement de soi</strong>.
+          </p>
+          <ul class="academie-facts">
+            <li data-reveal><i>A</i><h3>Initiation enfants</h3><p>« Graines de champions », dès le plus jeune âge.</p></li>
+            <li data-reveal><i>B</i><h3>Amateurs &amp; compétiteurs</h3><p>Du débutant au combattant confirmé.</p></li>
+            <li data-reveal><i>C</i><h3>Haut niveau</h3><p>Surfeurs pros du circuit mondial, footballeurs internationaux.</p></li>
+          </ul>
+        </div>
       </div>
     </section>
 
-    <!-- ===== 2. Le Fondateur ===== -->
-    <section class="founder section section-white" id="fondateur">
+    <!-- ===== LE FONDATEUR ===== -->
+    <section class="section founder" id="fondateur">
       <div class="container">
         <div class="founder-grid">
-          <div class="founder-visual reveal">
-            <!-- Remplacer ce visuel par une photo officielle de Yannick Beven : <img src="assets/yannick.jpg" alt="Yannick Beven"> -->
-            <figure class="founder-card">
-              <div class="founder-card-art" aria-hidden="true">
-                <span class="founder-initials">YB</span>
-                <span class="founder-belt"><i></i></span>
+          <div class="founder-side">
+            <div class="founder-sticky">
+              <p class="sec-label" data-reveal>02 — Le Fondateur</p>
+              <h2 class="founder-name" aria-label="Yannick Beven">
+                <span class="line" data-split>YANNICK</span>
+                <span class="line outline" data-split>BEVEN</span>
+              </h2>
+              <p class="founder-role" data-reveal>Maître · Préparateur physique · Coach mental</p>
+              <div class="founder-belt" data-reveal aria-label="Ceinture noire 5ème dan">
+                <span class="belt-band"><span class="belt-rank"></span></span>
+                <span class="belt-label">Ceinture Noire 5<sup>ème</sup> Dan — Faixa Preta</span>
               </div>
-              <figcaption>
-                <strong>Yannick&nbsp;Beven</strong>
-                <span>Ceinture Noire 5<sup>ème</sup>&nbsp;Dan – Faixa&nbsp;Preta</span>
-              </figcaption>
-            </figure>
-          </div>
-          <div class="founder-content reveal">
-            <p class="overline">Le Fondateur</p>
-            <h2 class="section-title">Yannick&nbsp;Beven – Maître, Préparateur Physique et Coach&nbsp;Mental</h2>
-            <p>
-              Né au Brésil, Yannick&nbsp;Beven est une figure incontournable du Jiu-Jitsu Brésilien et du surf
-              en France. Ancien surfeur professionnel, il a découvert le JJB grâce à Royler&nbsp;Gracie avant
-              d'être formé et gradé par Zé&nbsp;Marcello.
-            </p>
-            <p>
-              Aujourd'hui Ceinture Noire 5<sup>ème</sup>&nbsp;Dan de Jiu-Jitsu Brésilien, Yannick a commencé à
-              enseigner dans son propre garage avant de fonder la YBJJ&nbsp;Academy (historiquement basée à
-              Capbreton et aujourd'hui installée à Anglet).
-            </p>
-            <p>
-              En plus d'être professeur de JJB, Yannick est un préparateur physique et coach mental de renommée.
-              Il accompagne et entraîne quotidiennement des sportifs de haut niveau, dont de nombreux surfeurs
-              professionnels du circuit mondial (comme Michel&nbsp;Bourez ou son frère Patrick&nbsp;Beven) ainsi
-              que des légendes du sport français comme Bixente&nbsp;Lizarazu.
-            </p>
-            <div class="founder-athletes">
-              <p class="founder-athletes-label">Ils s'entraînent à ses côtés&nbsp;:</p>
-              <ul>
-                <li>Michel&nbsp;Bourez</li>
-                <li>Patrick&nbsp;Beven</li>
-                <li>Bixente&nbsp;Lizarazu</li>
-                <li>Surfeurs du circuit mondial</li>
-              </ul>
             </div>
           </div>
+          <div class="founder-bio">
+            <p data-reveal>
+              Né au <strong>Brésil</strong>, Yannick Beven est une figure incontournable du Jiu-Jitsu
+              Brésilien et du surf en France. Ancien <strong>surfeur professionnel</strong>, il a découvert
+              le JJB grâce à <strong>Royler&nbsp;Gracie</strong> avant d'être formé et gradé par
+              <strong>Zé&nbsp;Marcello</strong>.
+            </p>
+            <p data-reveal>
+              Aujourd'hui <strong>Ceinture Noire 5<sup>ème</sup>&nbsp;Dan</strong> de Jiu-Jitsu Brésilien,
+              Yannick a commencé à enseigner dans son propre garage avant de fonder la
+              YBJJ&nbsp;Academy — historiquement basée à <strong>Capbreton</strong> et aujourd'hui installée
+              à <strong>Anglet</strong>.
+            </p>
+            <p data-reveal>
+              En plus d'être professeur de JJB, Yannick est un <strong>préparateur physique et coach
+              mental</strong> de renommée. Il accompagne et entraîne quotidiennement des sportifs de haut
+              niveau, dont de nombreux surfeurs professionnels du circuit mondial — comme
+              <strong>Michel&nbsp;Bourez</strong> ou son frère <strong>Patrick&nbsp;Beven</strong> — ainsi que des légendes
+              du sport français comme <strong>Bixente&nbsp;Lizarazu</strong>.
+            </p>
+            <a class="link-arrow" href="#philosophie" data-cursor data-reveal>Découvrir l'esprit YBJJ <i>→</i></a>
+          </div>
+        </div>
+      </div>
+      <div class="marquee marquee-ghost" data-marquee data-marquee-speed="30" data-marquee-reverse>
+        <div class="marquee-track">
+          <span>MICHEL BOUREZ <i>★</i> BIXENTE LIZARAZU <i>★</i> PATRICK BEVEN <i>★</i> SURFEURS DU CIRCUIT MONDIAL <i>★</i>&nbsp;</span>
+          <span aria-hidden="true">MICHEL BOUREZ <i>★</i> BIXENTE LIZARAZU <i>★</i> PATRICK BEVEN <i>★</i> SURFEURS DU CIRCUIT MONDIAL <i>★</i>&nbsp;</span>
         </div>
       </div>
     </section>
 
-    <!-- ===== 3. Philosophie ===== -->
-    <section class="philosophy section section-dark" id="philosophie">
+    <!-- ===== PHILOSOPHIE ===== -->
+    <section class="section philosophy" id="philosophie">
       <div class="container">
-        <div class="section-head reveal">
-          <p class="overline overline-gold">Notre Philosophie</p>
-          <h2 class="section-title">L'Esprit YBJJ&nbsp;: Deux disciplines, un seul lifestyle</h2>
-          <p class="lead">
+        <div class="sec-head" data-reveal>
+          <p class="sec-label">03 — Notre Philosophie</p>
+          <h2 class="sec-title">L'esprit YBJJ&nbsp;: deux disciplines,<br>un seul lifestyle<span class="red">.</span></h2>
+          <p class="sec-sub">
             Sur la Côte Basque et Landaise, le surf et le Jiu-Jitsu Brésilien partagent un ADN
             commun&nbsp;: l'équilibre, l'humilité face aux éléments et l'exigence physique.
             À la YBJJ&nbsp;Academy, ces deux univers se rencontrent naturellement.
+            Sur les tatamis, nous mettons l'accent sur <strong>trois piliers</strong>.
           </p>
-          <p class="lead-secondary">Sur les tatamis, nous mettons l'accent sur trois piliers&nbsp;:</p>
         </div>
-        <div class="pillars">
-          <article class="pillar reveal">
-            <div class="pillar-icon" aria-hidden="true">
-              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 38 C18 30 14 20 24 14 C30 10 38 12 40 8"/>
-                <path d="M40 8 l-1 7 M40 8 l-7 1"/>
-                <circle cx="10" cy="38" r="3.4"/>
-              </svg>
-            </div>
-            <h3>La technique avant la force</h3>
+      </div>
+      <div class="pillars container">
+        <article class="pillar-card">
+          <span class="pillar-num" aria-hidden="true">01</span>
+          <div class="pillar-body">
+            <h3>La technique<br>avant la force</h3>
             <p>
-              L'apprentissage de contrôles efficaces et de soumissions variées, placés avec
-              fluidité et souplesse.
+              L'apprentissage de contrôles efficaces et de soumissions variées,
+              placés avec fluidité et souplesse.
             </p>
-          </article>
-          <article class="pillar reveal">
-            <div class="pillar-icon" aria-hidden="true">
-              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 18 v-4 a4 4 0 0 1 4-4 h12 a4 4 0 0 1 4 4 v4"/>
-                <path d="M12 18 h24 a4 4 0 0 1 4 4 v12 a4 4 0 0 1-4 4 h-24 a4 4 0 0 1-4-4 v-12 a4 4 0 0 1 4-4 Z"/>
-                <path d="M24 24 v6"/>
-              </svg>
-            </div>
-            <h3>La préparation physique</h3>
+          </div>
+        </article>
+        <article class="pillar-card">
+          <span class="pillar-num" aria-hidden="true">02</span>
+          <div class="pillar-body">
+            <h3>La préparation<br>physique</h3>
             <p>
               Un corps fort protège et performe. Chaque entraînement commence par des sessions
               intenses de «&nbsp;drills&nbsp;» et de renforcement musculaire pour préparer le corps
               aux exigences du combat.
             </p>
-          </article>
-          <article class="pillar reveal">
-            <div class="pillar-icon" aria-hidden="true">
-              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M24 40 C14 33 7 27 7 19 a8.5 8.5 0 0 1 17-1 a8.5 8.5 0 0 1 17 1 c0 8-7 14-17 21 Z"/>
-              </svg>
-            </div>
-            <h3>La transmission des valeurs</h3>
+          </div>
+        </article>
+        <article class="pillar-card">
+          <span class="pillar-num" aria-hidden="true">03</span>
+          <div class="pillar-body">
+            <h3>La transmission<br>des valeurs</h3>
             <p>
               Le JJB n'est pas qu'un sport, c'est un art de vivre. Le respect, la discipline et la
               résilience appris sur le tatami s'appliquent directement dans la vie quotidienne.
             </p>
-          </article>
-        </div>
-      </div>
-      <div class="wave-divider" aria-hidden="true">
-        <svg viewBox="0 0 1440 110" preserveAspectRatio="none">
-          <path d="M0,60 C260,20 480,95 760,70 C1040,45 1240,85 1440,50 L1440,110 L0,110 Z" fill="#F2F6F8"/>
-        </svg>
+          </div>
+        </article>
       </div>
     </section>
 
-    <!-- ===== 4. Nos Cours ===== -->
-    <section class="courses section section-light" id="cours">
+    <!-- ===== COURS ===== -->
+    <section class="section section-white courses" id="cours">
       <div class="container">
-        <div class="section-head reveal">
-          <p class="overline">Nos Cours&nbsp;· Enfants et Adultes</p>
-          <h2 class="section-title">Les Entraînements à la YBJJ&nbsp;Academy</h2>
+        <div class="sec-head" data-reveal>
+          <p class="sec-label">04 — Nos Cours · Enfants et Adultes</p>
+          <h2 class="sec-title">Les entraînements<br>à la YBJJ Academy<span class="red">.</span></h2>
         </div>
         <div class="courses-grid">
-          <article class="course-card reveal">
-            <span class="course-tag">Enfants</span>
-            <h3>«&nbsp;Graines de champions&nbsp;»</h3>
+          <article class="course-card" data-reveal>
+            <header>
+              <span class="course-tag">Enfants</span>
+              <h3>«&nbsp;GRAINES DE<br>CHAMPIONS&nbsp;»</h3>
+            </header>
             <p>
               Yannick accorde une importance toute particulière à l'enseignement des plus jeunes.
-              Les cours pour enfants se déroulent dans une ambiance studieuse et bienveillante.
-              Au-delà des techniques martiales, l'objectif est de leur transmettre les valeurs du JJB.
+              Les cours pour enfants se déroulent dans une <strong>ambiance studieuse et
+              bienveillante</strong>. Au-delà des techniques martiales, l'objectif est de leur
+              transmettre les valeurs du JJB.
             </p>
             <p>
               À la fin de chaque séance, un temps est pris pour discuter avec eux de la manière
-              d'appliquer le respect et la discipline dans leur quotidien.
+              d'appliquer le <strong>respect</strong> et la <strong>discipline</strong> dans leur quotidien.
             </p>
           </article>
-          <article class="course-card reveal">
-            <span class="course-tag course-tag-alt">Adultes</span>
-            <h3>Amateurs et Compétiteurs</h3>
+          <article class="course-card course-card-adult" data-reveal>
+            <header>
+              <span class="course-tag course-tag-red">Adultes</span>
+              <h3>AMATEURS ET<br>COMPÉTITEURS</h3>
+            </header>
             <p>
               Le groupe adulte compte de nombreux passionnés allant du débutant au combattant
-              confirmé. Le cours type se déroule en trois temps&nbsp;:
+              confirmé. Le cours type se déroule en <strong>trois temps</strong>&nbsp;:
             </p>
             <ol class="course-steps">
-              <li>
+              <li data-reveal>
                 <span class="step-num">01</span>
                 <div>
-                  <h4>Préparation physique &amp; Échauffement</h4>
-                  <p>Environ 30 à 45&nbsp;minutes de renforcement (utilisation de TRX, poids, cardio) dédiées à la condition physique.</p>
+                  <h4>Préparation physique &amp; échauffement</h4>
+                  <p>Environ 30 à 45&nbsp;minutes de renforcement — TRX, poids, cardio — dédiées à la condition physique.</p>
                 </div>
               </li>
-              <li>
+              <li data-reveal>
                 <span class="step-num">02</span>
                 <div>
                   <h4>Technique</h4>
                   <p>Démonstration et répétition des postures, passages de garde et soumissions, sous l'œil attentif des instructeurs.</p>
                 </div>
               </li>
-              <li>
+              <li data-reveal>
                 <span class="step-num">03</span>
                 <div>
-                  <h4>Sparring («&nbsp;Roulades&nbsp;»)</h4>
+                  <h4>Sparring — «&nbsp;Roulades&nbsp;»</h4>
                   <p>Mise en application lors de combats libres, toujours dans un esprit de camaraderie et de sécurité.</p>
                 </div>
               </li>
             </ol>
           </article>
         </div>
-        <div class="courses-cta reveal">
-          <p>Envie d'essayer&nbsp;? Petits et grands sont les bienvenus sur le tatami.</p>
-          <a href="#contact" class="btn btn-primary">Venir s'entraîner</a>
-        </div>
       </div>
     </section>
 
-    <!-- ===== 5. Infos pratiques & Contact ===== -->
-    <!-- NOTE : informations issues des annuaires sportifs récents, à faire valider par Yannick avant mise en ligne. -->
-    <section class="contact section section-white" id="contact">
+    <!-- ===== CONTACT ===== -->
+    <!-- NOTE : informations issues d'annuaires sportifs récents — à faire valider par Yannick avant mise en ligne. -->
+    <section class="section contact" id="contact">
       <div class="container">
-        <div class="section-head reveal">
-          <p class="overline">Infos Pratiques&nbsp;&amp; Contact</p>
-          <h2 class="section-title">Rejoignez-nous sur le tatami</h2>
-        </div>
+        <p class="sec-label" data-reveal>05 — Infos pratiques &amp; Contact</p>
+        <h2 class="contact-title" data-reveal>
+          <a href="mailto:bevenyannick@gmail.com" data-cursor>REJOINS<br>LE TEAM<span class="red">.</span></a>
+        </h2>
         <div class="contact-grid">
-          <div class="contact-info reveal">
-            <ul class="contact-list">
-              <li>
-                <span class="contact-ico" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21 C7 16 4 12.5 4 9 a8 8 0 0 1 16 0 c0 3.5-3 7-8 12 Z"/><circle cx="12" cy="9" r="2.6"/></svg>
-                </span>
-                <div>
-                  <h3>Adresse</h3>
-                  <p>Moskova&nbsp;HQ – Allée Louis de Foix<br>64600 Anglet, France</p>
-                </div>
-              </li>
-              <li>
-                <span class="contact-ico" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21 c1.5-4.5 4.5-6.5 8-6.5 s6.5 2 8 6.5"/></svg>
-                </span>
-                <div>
-                  <h3>Manager&nbsp;/ Contact</h3>
-                  <p>Imanol&nbsp;Anchordoqui</p>
-                </div>
-              </li>
-              <li>
-                <span class="contact-ico" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4 h4 l2 5 -2.5 1.5 a12 12 0 0 0 5 5 L15 13 l5 2 v4 a2 2 0 0 1-2 2 A16 16 0 0 1 3 6 a2 2 0 0 1 2-2 Z"/></svg>
-                </span>
-                <div>
-                  <h3>Téléphone</h3>
-                  <p><a href="tel:+33651699972">+33&nbsp;6&nbsp;51&nbsp;69&nbsp;99&nbsp;72</a></p>
-                </div>
-              </li>
-              <li>
-                <span class="contact-ico" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7 l9 6 9-6"/></svg>
-                </span>
-                <div>
-                  <h3>Email</h3>
-                  <p><a href="mailto:bevenyannick@gmail.com">bevenyannick@gmail.com</a></p>
-                </div>
-              </li>
-            </ul>
-            <div class="contact-socials">
-              <h3>Réseaux sociaux</h3>
-              <ul>
-                <li>
-                  <a href="https://www.instagram.com/yannickbeven2614" target="_blank" rel="noopener">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor"/></svg>
-                    <span>@yannickbeven2614</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="https://www.instagram.com/ybjj_academy" target="_blank" rel="noopener">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="0.6" fill="currentColor"/></svg>
-                    <span>@ybjj_academy</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="https://www.youtube.com/@yannickbeven2614" target="_blank" rel="noopener">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12.5" rx="3.5"/><path d="M10.5 9.5 l5 3 -5 3 Z" fill="currentColor" stroke="none"/></svg>
-                    <span>Yannick Beven – YouTube</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="contact-map reveal">
+          <ul class="contact-list">
+            <li data-reveal>
+              <span class="contact-label">Adresse</span>
+              <a href="https://www.google.com/maps/search/?api=1&query=All%C3%A9e+Louis+de+Foix+64600+Anglet" target="_blank" rel="noopener" data-cursor>
+                Moskova HQ — Allée Louis de Foix, 64600 Anglet <i>↗</i>
+              </a>
+            </li>
+            <li data-reveal>
+              <span class="contact-label">Manager / Contact</span>
+              <span class="contact-value">Imanol Anchordoqui</span>
+            </li>
+            <li data-reveal>
+              <span class="contact-label">Téléphone</span>
+              <a href="tel:+33651699972" data-cursor>+33 6 51 69 99 72 <i>↗</i></a>
+            </li>
+            <li data-reveal>
+              <span class="contact-label">Email</span>
+              <a href="mailto:bevenyannick@gmail.com" data-cursor>bevenyannick@gmail.com <i>↗</i></a>
+            </li>
+            <li data-reveal>
+              <span class="contact-label">Réseaux</span>
+              <span class="contact-socials">
+                <a href="https://www.instagram.com/yannickbeven2614" target="_blank" rel="noopener" data-cursor>Instagram @yannickbeven2614 <i>↗</i></a>
+                <a href="https://www.instagram.com/ybjj_academy" target="_blank" rel="noopener" data-cursor>Instagram @ybjj_academy <i>↗</i></a>
+                <a href="https://www.youtube.com/@yannickbeven2614" target="_blank" rel="noopener" data-cursor>YouTube Yannick Beven <i>↗</i></a>
+              </span>
+            </li>
+          </ul>
+          <div class="contact-map" data-reveal>
             <iframe
               title="Plan d'accès – YBJJ Academy, Allée Louis de Foix, Anglet"
               src="https://www.google.com/maps?q=All%C3%A9e+Louis+de+Foix,+64600+Anglet,+France&output=embed"
               loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
               allowfullscreen></iframe>
-            <a class="map-link" href="https://www.google.com/maps/search/?api=1&query=All%C3%A9e+Louis+de+Foix+64600+Anglet" target="_blank" rel="noopener">Ouvrir dans Google&nbsp;Maps&nbsp;→</a>
           </div>
         </div>
       </div>
@@ -351,36 +343,44 @@
 
   <!-- ===== Footer ===== -->
   <footer class="site-footer">
-    <div class="container footer-grid">
-      <div class="footer-brand">
-        <img src="assets/logo.svg" alt="Logo YBJJ Academy" width="110" height="110">
-        <p>L'excellence du Jiu-Jitsu Brésilien sur la Côte Basque, entre tatami et océan.</p>
-      </div>
-      <nav class="footer-nav" aria-label="Navigation de pied de page">
-        <h3>Navigation</h3>
-        <ul>
-          <li><a href="#accueil">Accueil</a></li>
-          <li><a href="#fondateur">Le Fondateur</a></li>
-          <li><a href="#philosophie">Philosophie</a></li>
-          <li><a href="#cours">Nos Cours</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
-      <div class="footer-contact">
-        <h3>Contact</h3>
-        <ul>
-          <li>Moskova&nbsp;HQ – Allée Louis de Foix, 64600 Anglet</li>
-          <li><a href="tel:+33651699972">+33&nbsp;6&nbsp;51&nbsp;69&nbsp;99&nbsp;72</a></li>
-          <li><a href="mailto:bevenyannick@gmail.com">bevenyannick@gmail.com</a></li>
-        </ul>
+    <div class="footer-giant" aria-hidden="true">
+      <div class="marquee" data-marquee data-marquee-speed="40">
+        <div class="marquee-track">
+          <span>YBJJ ACADEMY — JIU JITSU TEAM —&nbsp;</span>
+          <span aria-hidden="true">YBJJ ACADEMY — JIU JITSU TEAM —&nbsp;</span>
+        </div>
       </div>
     </div>
-    <div class="footer-bottom">
-      <p>© 2026 YBJJ&nbsp;Academy – Anglet, Côte Basque. Tous droits réservés.</p>
-      <p class="footer-motto">Oss&nbsp;🤙 Technique, respect et belles vagues.</p>
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="Logo YBJJ Academy" width="84" height="84">
+        <p>L'excellence du Jiu-Jitsu Brésilien sur la Côte Basque.<br>Éducation martiale, entre tatami et océan.</p>
+      </div>
+      <nav class="footer-nav" aria-label="Pied de page">
+        <ul>
+          <li><a href="#accueil" data-cursor>Accueil</a></li>
+          <li><a href="#academie" data-cursor>L'Académie</a></li>
+          <li><a href="#fondateur" data-cursor>Le Fondateur</a></li>
+          <li><a href="#philosophie" data-cursor>Philosophie</a></li>
+          <li><a href="#cours" data-cursor>Cours</a></li>
+          <li><a href="#contact" data-cursor>Contact</a></li>
+        </ul>
+      </nav>
+      <div class="footer-meta">
+        <p>Moskova HQ — Allée Louis de Foix<br>64600 Anglet, France</p>
+        <a href="tel:+33651699972" data-cursor>+33 6 51 69 99 72</a><br>
+        <a href="mailto:bevenyannick@gmail.com" data-cursor>bevenyannick@gmail.com</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>© <span id="year">2026</span> YBJJ Academy — Tous droits réservés.</p>
+      <p class="footer-oss">OSS 🤙 — Technique, respect &amp; belles vagues.</p>
     </div>
   </footer>
 
+  <script src="js/vendor/gsap.min.js"></script>
+  <script src="js/vendor/ScrollTrigger.min.js"></script>
+  <script src="js/vendor/lenis.min.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

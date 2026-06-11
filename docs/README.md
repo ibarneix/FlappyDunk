@@ -1,60 +1,90 @@
-# Site YBJJ Academy
+# Site YBJJ Academy — Jiu Jitsu Team
 
-Site vitrine one-page de la **YBJJ Academy** (Jiu-Jitsu Brésilien – Yannick Beven, Anglet, Côte Basque).
+Site vitrine one-page de la **YBJJ Academy** (Yannick Beven, Anglet — Côte Basque).
+Design noir / rouge / blanc dérivé du logo officiel du club, inspiré des sites
+de pilotes F1 : préloader animé, smooth scroll (Lenis), animations au scroll
+(GSAP + ScrollTrigger), curseur personnalisé, marquees réactifs à la vitesse de
+scroll, particules en canvas, boutons magnétiques, badge 3D au survol.
 
 ## Structure
 
 ```
 docs/
-├── index.html          # Page unique (accueil, fondateur, philosophie, cours, contact)
-├── css/styles.css      # Styles (palette centralisée en variables CSS)
-├── js/main.js          # Menu mobile, animations d'apparition, lien actif
+├── index.html              # Page unique (5 sections + footer)
+├── css/styles.css          # Styles — palette centralisée en variables CSS
+├── js/main.js              # Interactions (préloader, scroll, curseur…)
+├── js/vendor/              # GSAP, ScrollTrigger, Lenis (embarqués en local)
 └── assets/
-    ├── logo.svg        # Logo badge complet (hero, footer)
-    └── logo-mark.svg   # Emblème compact (navbar, favicon)
+    ├── logo.png            # ⚠ LOGO AFFICHÉ PARTOUT (voir ci-dessous)
+    ├── logo.svg            # Recréation vectorielle du logo (option)
+    ├── logo-mark.svg       # Emblème compact vectoriel (option)
+    └── fonts/              # Polices Anton & Archivo auto-hébergées
 ```
 
-## Ouvrir le site
+Tout est embarqué (polices, librairies) : **le site fonctionne hors-ligne,
+sans CDN ni service externe** (seule la carte Google Maps de la section
+contact nécessite Internet).
 
-Ouvrir simplement `index.html` dans un navigateur, ou servir le dossier :
+## ⚠ Remplacer le logo par le fichier original
+
+L'image du chat ne peut pas être transférée telle quelle dans le dépôt par
+l'assistant : `assets/logo.png` contient donc une recréation provisoire.
+**Pour afficher le logo original à l'identique** : déposez votre fichier à la
+place de `docs/assets/logo.png` (même nom). Rien d'autre à changer — il
+apparaîtra automatiquement dans le préloader, la barre de navigation, le hero,
+le footer et l'onglet du navigateur. L'image est recadrée en cercle à
+l'affichage, idéalement un fichier carré ≥ 800×800 px.
+
+Sur GitHub : ouvrir le dossier `docs/assets/` → `Add file` → `Upload files`
+→ glisser votre `logo.png` → `Commit`.
+
+## Lancer en local (sans Docker)
 
 ```bash
 cd docs && python3 -m http.server 8000
-# puis http://localhost:8000
+# → http://localhost:8000
 ```
 
-## Mettre en ligne avec GitHub Pages
+## Déploiement Docker (recommandé)
 
-Sur GitHub : **Settings → Pages → Source : Deploy from a branch**, choisir la
-branche et le dossier `/docs`. Le site sera servi automatiquement.
+Depuis la racine du dépôt :
 
-## Remplacer par le logo officiel
+```bash
+docker compose up -d --build
+# → http://localhost:8080
+```
 
-Les deux fichiers SVG du dossier `assets/` sont une **recréation** du logo
-(vague + ceinture noire 5ᵉ dan). Pour utiliser le logo officiel :
+ou sans compose :
 
-1. Déposer le fichier dans `assets/` (ex. `assets/logo.png`).
-2. Remplacer les `src` dans `index.html` (occurrences de `assets/logo.svg`
-   et `assets/logo-mark.svg`).
+```bash
+docker build -t ybjj-academy .
+docker run -d --name ybjj-academy -p 8080:80 --restart unless-stopped ybjj-academy
+```
+
+L'image utilise nginx (alpine) avec une configuration optimisée et vérifiée :
+compression gzip, cache long pour polices/images, cache moyen pour CSS/JS,
+HTML toujours frais, en-têtes de sécurité, healthcheck intégré.
+
+- Changer le port : éditer `ports:` dans `docker-compose.yml` (ex. `"80:80"`).
+- Mise à jour après modification du site : `docker compose up -d --build`.
+- Arrêter : `docker compose down`.
+
+## Alternative gratuite : GitHub Pages
+
+Settings → Pages → *Deploy from a branch* → choisir la branche et le dossier
+`/docs`. Le site est alors servi par GitHub sans serveur à gérer.
 
 ## Adapter les couleurs
 
-Toute la palette est définie au début de `css/styles.css` (`:root`).
-Modifier ces variables suffit à recolorer tout le site, par exemple pour
-caler les teintes exactes du logo officiel :
+Toute la palette est dans `:root` au début de `css/styles.css` :
 
 ```css
---navy-900: #0B1B2B;  /* fond sombre */
---ocean-400: #3FB0D8; /* bleu vague */
---sand-400: #E3C36B;  /* or sable (accents) */
+--noir:  #0A0A0B;   /* fond principal */
+--rouge: #D0201E;   /* rouge du logo */
+--creme: #F4F2EE;   /* sections claires */
 ```
 
-## À valider avant publication
+## À valider avant mise en ligne publique
 
-Les informations de la section Contact (adresse Moskova HQ, téléphone,
-manager, email) proviennent d'annuaires sportifs récents : **à faire
-confirmer par Yannick** avant la mise en ligne.
-
-Prévoir également une photo officielle de Yannick Beven pour remplacer le
-visuel « YB » de la section Fondateur (emplacement indiqué en commentaire
-dans `index.html`).
+Les informations de contact (adresse Moskova HQ, téléphone, manager, email)
+proviennent d'annuaires sportifs récents : **à faire confirmer par Yannick**.

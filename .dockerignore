@@ -1,0 +1,4 @@
+# Seuls le site (docs/) et la config (deploy/) entrent dans l'image
+*
+!docs/
+!deploy/
