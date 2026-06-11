@@ -1,5 +1,8 @@
+import { Disciplines } from "@/components/sections/disciplines";
 import { Hero } from "@/components/sections/hero";
 import { Quote } from "@/components/sections/quote";
+import { Team } from "@/components/sections/team";
+import { Values } from "@/components/sections/values";
 
 /**
  * Page d'accueil — vitrine une page : chaque section est ancrée
@@ -10,6 +13,9 @@ export default function HomePage() {
     <main id="contenu">
       <Hero />
       <Quote />
+      <Values />
+      <Disciplines />
+      <Team />
     </main>
   );
 }
