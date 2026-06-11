@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" role="img" aria-label="Emblème YBJJ Academy">
+  <defs>
+    <linearGradient id="waveGradM" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3FB0D8"/>
+      <stop offset="1" stop-color="#15648C"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="240" cy="240" r="232" fill="#0B1B2B"/>
+  <circle cx="240" cy="240" r="232" fill="none" stroke="#E3C36B" stroke-width="14"/>
+
+  <!-- Vague : houle montante et curl en spirale -->
+  <g fill="none" stroke-linecap="round" transform="translate(-14,-22) scale(1.06)">
+    <path d="M 136,306 C 144,238 196,188 300,186
+             A 62,62 0 1 1 300,310
+             A 42,42 0 1 1 300,226
+             A 26,26 0 1 1 300,278"
+          stroke="url(#waveGradM)" stroke-width="22"/>
+    <path d="M 252,189 C 290,187 322,205 334,234"
+          stroke="#F2F7FA" stroke-width="10"/>
+    <circle cx="300" cy="278" r="9" fill="#F2F7FA" stroke="none"/>
+  </g>
+
+  <!-- Ceinture noire, barre rouge de grade -->
+  <g transform="translate(0,8)">
+    <rect x="138" y="344" width="204" height="26" rx="6" fill="#15181D" stroke="#E3C36B" stroke-width="2"/>
+    <rect x="288" y="344" width="40" height="26" fill="#B3372E"/>
+    <g stroke="#E3C36B" stroke-width="2.5">
+      <line x1="294" y1="344" x2="294" y2="370"/>
+      <line x1="301" y1="344" x2="301" y2="370"/>
+      <line x1="308" y1="344" x2="308" y2="370"/>
+      <line x1="315" y1="344" x2="315" y2="370"/>
+      <line x1="322" y1="344" x2="322" y2="370"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" role="img" aria-label="Logo YBJJ Academy – Jiu-Jitsu Brésilien, Côte Basque">
+  <defs>
+    <linearGradient id="waveGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3FB0D8"/>
+      <stop offset="1" stop-color="#15648C"/>
+    </linearGradient>
+    <path id="arcTop" d="M 240,240 m -188,0 a 188,188 0 1 1 376,0"/>
+    <path id="arcBottom" d="M 240,240 m -202,0 a 202,202 0 1 0 404,0"/>
+  </defs>
+
+  <!-- Fond du badge -->
+  <circle cx="240" cy="240" r="236" fill="#0B1B2B"/>
+  <circle cx="240" cy="240" r="236" fill="none" stroke="#E3C36B" stroke-width="7"/>
+  <circle cx="240" cy="240" r="216" fill="none" stroke="#E3C36B" stroke-width="2" opacity="0.85"/>
+  <circle cx="240" cy="240" r="156" fill="#10283E"/>
+  <circle cx="240" cy="240" r="156" fill="none" stroke="#E3C36B" stroke-width="2" opacity="0.85"/>
+
+  <!-- Textes circulaires -->
+  <text fill="#E3C36B" font-family="'Oswald','Arial Narrow',Arial,sans-serif" font-size="42" font-weight="600" letter-spacing="10">
+    <textPath href="#arcTop" startOffset="50%" text-anchor="middle">YBJJ&#160;ACADEMY</textPath>
+  </text>
+  <text fill="#EAF4F8" font-family="'Oswald','Arial Narrow',Arial,sans-serif" font-size="23" font-weight="400" letter-spacing="5">
+    <textPath href="#arcBottom" startOffset="50%" text-anchor="middle">JIU-JITSU BRÉSILIEN • CÔTE BASQUE</textPath>
+  </text>
+
+  <!-- Étoiles séparatrices -->
+  <g fill="#E3C36B">
+    <path d="M 54,240 l 5,-7 5,7 -5,7 Z"/>
+    <path d="M 416,240 l 5,-7 5,7 -5,7 Z"/>
+  </g>
+
+  <!-- Vague stylisée : houle montante et curl en spirale -->
+  <g fill="none" stroke-linecap="round" transform="translate(-8,-4)">
+    <path d="M 136,306 C 144,238 196,188 300,186
+             A 62,62 0 1 1 300,310
+             A 42,42 0 1 1 300,226
+             A 26,26 0 1 1 300,278"
+          stroke="url(#waveGrad)" stroke-width="17"/>
+    <!-- Écume sur la crête -->
+    <path d="M 252,189 C 290,187 322,205 334,234"
+          stroke="#F2F7FA" stroke-width="8"/>
+    <circle cx="300" cy="278" r="7" fill="#F2F7FA" stroke="none"/>
+  </g>
+
+  <!-- Ceinture noire, barre rouge de grade -->
+  <g>
+    <rect x="150" y="344" width="180" height="20" rx="5" fill="#15181D" stroke="#E3C36B" stroke-width="1.5"/>
+    <rect x="284" y="344" width="32" height="20" fill="#B3372E"/>
+    <g stroke="#E3C36B" stroke-width="2">
+      <line x1="289" y1="344" x2="289" y2="364"/>
+      <line x1="295" y1="344" x2="295" y2="364"/>
+      <line x1="301" y1="344" x2="301" y2="364"/>
+      <line x1="307" y1="344" x2="307" y2="364"/>
+      <line x1="313" y1="344" x2="313" y2="364"/>
+    </g>
+  </g>
+</svg>
